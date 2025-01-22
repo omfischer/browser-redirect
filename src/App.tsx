@@ -19,9 +19,11 @@ function App() {
   };
 
   console.log(isInAppBrowser());
+
   return (
     <>
       <div>
+        <p>yay... you are using {isInAppBrowser()}</p>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -34,14 +36,16 @@ function App() {
         This is the {isInAppBrowser()}
       </p>
       {/* <OpenInBrowser /> */}
-      <button
+      {/* <button
         onClick={() => (window.location.href = "http://www.jottacloud.com/share/3gp6ac5asmf5")}
       >
         Open in Safari
       </button>
       <a href="http://www.jottacloud.com/share/3gp6ac5asmf5" target="_self" rel="noopener noreferrer">
         Open in Safari
-      </a>
+      </a> */}
+      <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button>
+      <a href="https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
     </>
   )
 }
