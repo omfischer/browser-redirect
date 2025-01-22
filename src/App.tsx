@@ -71,10 +71,10 @@ function App() {
       </a> */}
       {/* <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button> */}
       <div className="flex flex-col gap-2">
-        <a href={link} target="_blank">Denne er dynamisk og skal funke uavhengig av device</a>
-        <a href={iOSLink} target="_blank">1: hva skjer med denne? iOs prefix</a>
-        <a href={androidLink} target="_blank">2: hva skjer med denne? Android prefix</a>
-        <a href={falbackLink} target="_blank">3: hva skjer med denne? Standard link</a>
+        <a href={link} target="_blank">1: Device agnostisk</a>
+        <a href={iOSLink} target="_blank">2: hva skjer med denne? iOs prefix</a>
+        <a href={androidLink} target="_blank">3: hva skjer med denne? Android prefix</a>
+        <a href={falbackLink} target="_blank">4: hva skjer med denne? Standard link</a>
       </div>
 
       {/* Test mobilesafari prefix:
