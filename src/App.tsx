@@ -1,10 +1,9 @@
-import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import OpenInBrowser from './OpenInBrowser'
 
 function App() {
-  const [count, setCount] = useState(0)
   const isInAppBrowser = () => {
     const userAgent = navigator.userAgent || navigator.vendor;
 
@@ -35,17 +34,8 @@ function App() {
       <p>
         This is the {isInAppBrowser()}
       </p>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <OpenInBrowser />
+
     </>
   )
 }
