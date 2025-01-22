@@ -1,6 +1,6 @@
 const OpenInBrowser = () => {
   const handleOpenInNewTab = () => {
-    const url = 'https://yourdomain.com'; // Replace with your link
+    const url = 'browser-redirect-git-main-omfischers-projects.vercel.app'; // Replace with your link
     const newTab = window.open(url, '_blank', 'noopener,noreferrer');
 
     if (!newTab) {
