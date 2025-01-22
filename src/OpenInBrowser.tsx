@@ -1,10 +1,10 @@
 const OpenInBrowser = () => {
   const handleOpenInNewTab = () => {
-    const url = 'browser-redirect-git-main-omfischers-projects.vercel.app'; // Replace with your link
-    const newTab = window.open(url, '_blank', 'noopener,noreferrer');
+    const bridgeUrl = '/bridge-page.html'; // Path to your bridge page
+    const newTab = window.open(bridgeUrl, '_blank', 'noopener,noreferrer');
 
     if (!newTab) {
-      alert('Unable to open the link. Please open it manually in your browser.');
+      alert('Unable to open the link. Please manually open it in your browser.');
     }
   };
 
