@@ -35,11 +35,11 @@ function App() {
       </p>
       {/* <OpenInBrowser /> */}
       <button
-        onClick={() => (window.location.href = "https://www.jottacloud.com/share/3gp6ac5asmf5")}
+        onClick={() => (window.location.href = "http://www.jottacloud.com/share/3gp6ac5asmf5")}
       >
         Open in Safari
       </button>
-      <a href="https://www.jottacloud.com/share/3gp6ac5asmf5" target="_self" rel="noopener noreferrer">
+      <a href="http://www.jottacloud.com/share/3gp6ac5asmf5" target="_self" rel="noopener noreferrer">
         Open in Safari
       </a>
     </>
