@@ -45,10 +45,10 @@ function App() {
         Open in Safari
       </a> */}
       {/* <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button> */}
-      <a href="https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
+      <a href="x-safari-https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
 
       Test mobilesafari prefix:
-      <a href="com-apple-mobilesafari-tab:https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
+      <a href="com-apple-mobilesafari-tab:x-safari-https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
       {/* <a href="javascript:window.location='https://www.jottacloud.com/share/3gp6ac5asmf5'">Open in Safari</a > */}
     </>
   )
