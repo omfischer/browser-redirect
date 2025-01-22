@@ -5,7 +5,22 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const isInAppBrowser = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
+    // Detect Instagram
+    if (/Instagram/.test(userAgent)) return 'Instagram';
+
+    // Detect Facebook or Messenger
+    if (/FBAN|FBAV|Messenger/.test(userAgent)) return 'Facebook or Messenger';
+
+    // Detect other common in-app browsers (customize as needed)
+    if (/Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent)) return 'Other In-App Browser';
+
+    return 'Default Browser';
+  };
+
+  console.log(isInAppBrowser());
   return (
     <>
       <div>
@@ -17,6 +32,9 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
+      <p>
+        This is the {isInAppBrowser()}
+      </p>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
