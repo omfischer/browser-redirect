@@ -44,9 +44,9 @@ function App() {
       <a href="http://www.jottacloud.com/share/3gp6ac5asmf5" target="_self" rel="noopener noreferrer">
         Open in Safari
       </a> */}
-      {/* <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button>
-      <a href="https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a> */}
-      <a href="javascript:window.location='https://www.jottacloud.com/share/3gp6ac5asmf5'">Open in Safari</a >
+      {/* <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button> */}
+      <a href="https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
+      {/* <a href="javascript:window.location='https://www.jottacloud.com/share/3gp6ac5asmf5'">Open in Safari</a > */}
     </>
   )
 }
