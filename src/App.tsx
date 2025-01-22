@@ -74,12 +74,15 @@ function App() {
         <a href={link} target="_blank" className="block">
           1: Device agnostisk
         </a>
+        <br />
         <a href={iOSLink} target="_blank" className="block">
           2: hva skjer med denne? iOs prefix
         </a>
+        <br />
         <a href={androidLink} target="_blank" className="block">
           3: hva skjer med denne? Android prefix
         </a>
+        <br />
         <a href={falbackLink} target="_blank" className="block">
           4: hva skjer med denne? Standard link
         </a>
