@@ -1,11 +1,13 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import React from 'react'
 
 function App() {
-  const iOSLink = 'x-safari-https://www.jottacloud.com/share/3gp6ac5asmf5'
-  const androidLink = 'intent://www.jottacloud.com/share/3gp6ac5asmf5#Intent;scheme=https;action=android.intent.action.VIEW;end'
-  const falbackLink = 'https://www.jottacloud.com/share/3gp6ac5asmf5'
+  const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
+  const iOSLink = `x-safari-https://${shareLink}`
+  const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
+  const falbackLink = `https://${shareLink}`
 
   const userAgent = navigator.userAgent || navigator.vendor;
   const getPlatform = () => {
@@ -20,7 +22,6 @@ function App() {
   };
 
   const isInAppBrowser = () => {
-
     // Detect Instagram
     if (/Instagram/.test(userAgent)) return 'Instagram';
 
@@ -44,7 +45,21 @@ function App() {
     }
   })();
 
-  console.log(isInAppBrowser());
+  // Add useEffect for automatic redirect
+  React.useEffect(() => {
+    const targetLink = (() => {
+      switch (getPlatform()) {
+        case 'ios':
+          return iOSLink;
+        case 'android':
+          return androidLink;
+        default:
+          return falbackLink;
+      }
+    })();
+
+    window.location.href = targetLink;
+  }, []);
 
   return (
     <>
@@ -60,16 +75,6 @@ function App() {
       <p>
         This is the {isInAppBrowser()}
       </p>
-      {/* <OpenInBrowser /> */}
-      {/* <button
-        onClick={() => (window.location.href = "http://www.jottacloud.com/share/3gp6ac5asmf5")}
-      >
-        Open in Safari
-      </button>
-      <a href="http://www.jottacloud.com/share/3gp6ac5asmf5" target="_self" rel="noopener noreferrer">
-        Open in Safari
-      </a> */}
-      {/* <button onClick={() => window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank')}>Open in Safari</button> */}
       <div className="flex flex-col gap-2">
         <a href={link} target="_blank" className="block">
           1: Device agnostisk
@@ -89,8 +94,9 @@ function App() {
       </div>
 
       {/* Test mobilesafari prefix:
-      <a href="com-apple-mobilesafari-tab:x-safari-https://www.jottacloud.com/share/3gp6ac5asmf5" target="_blank">Open in Safari</a>
-      <a href="javascript:window.location='https://www.jottacloud.com/share/3gp6ac5asmf5'">Open in Safari</a > */}
+      start med redirect til samme location, men med et query param
+      hvis query param er x-safari, så skal den redirect til samme location, men med x-safari prefix
+      */}
     </>
   )
 }
