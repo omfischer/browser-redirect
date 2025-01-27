@@ -7,7 +7,11 @@ function App() {
   const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
   const iOSLink = `x-safari-https://${shareLink}`
   const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
-  const falbackLink = `https://${shareLink}`
+  const fallbackLink = `https://${shareLink}`
+
+  // Add URL params check
+  const urlParams = new URLSearchParams(window.location.search);
+  const tryNativeBrowser = urlParams.get('openInNative') === 'true';
 
   const userAgent = navigator.userAgent || navigator.vendor;
   const getPlatform = () => {
@@ -34,32 +38,36 @@ function App() {
     return 'Default Browser';
   };
 
-  const link = (() => {
-    switch (getPlatform()) {
-      case 'ios':
-        return iOSLink;
-      case 'android':
-        return androidLink;
-      default:
-        return falbackLink;
-    }
-  })();
-
-  // Add useEffect for automatic redirect
+  // Update useEffect for automatic redirect
   React.useEffect(() => {
     const targetLink = (() => {
-      switch (getPlatform()) {
-        case 'ios':
-          return iOSLink;
-        case 'android':
-          return androidLink;
-        default:
-          return falbackLink;
+      if (tryNativeBrowser) {
+        // If we're trying to break out to native browser
+        switch (getPlatform()) {
+          case 'ios':
+            return iOSLink;
+          case 'android':
+            return androidLink;
+          default:
+            return fallbackLink;
+        }
       }
+      // First attempt always uses the fallback link
+      return fallbackLink;
     })();
 
-    window.location.href = targetLink;
-  }, []);
+    // Add timeout to ensure the UI is rendered before redirect
+    setTimeout(() => {
+      window.location.href = targetLink;
+    }, 100);
+  }, [tryNativeBrowser]);
+
+  // Update the link generation for manual clicks
+  const link = (() => {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('openInNative', 'true');
+    return currentUrl.toString();
+  })();
 
   return (
     <>
@@ -88,7 +96,7 @@ function App() {
           3: hva skjer med denne? Android prefix
         </a>
         <br />
-        <a href={falbackLink} target="_blank" className="block">
+        <a href={fallbackLink} target="_blank" className="block">
           4: hva skjer med denne? Standard link
         </a>
       </div>
