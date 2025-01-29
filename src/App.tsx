@@ -1,7 +1,7 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import React from 'react'
+import { useEffect } from 'react'
 
 function App() {
   const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
@@ -10,20 +10,20 @@ function App() {
   const fallbackLink = `https://${shareLink}`
 
   // Add URL params check
-  const urlParams = new URLSearchParams(window.location.search);
-  const tryNativeBrowser = urlParams.get('openInNative') === 'true';
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const tryNativeBrowser = urlParams.get('openInNative') === 'true';
 
   const userAgent = navigator.userAgent || navigator.vendor;
-  const getPlatform = () => {
+  // const getPlatform = () => {
 
-    if (/iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)) {
-      return 'ios';
-    }
-    if (/android/i.test(userAgent)) {
-      return 'android';
-    }
-    return 'other';
-  };
+  //   if (/iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)) {
+  //     return 'ios';
+  //   }
+  //   if (/android/i.test(userAgent)) {
+  //     return 'android';
+  //   }
+  //   return 'other';
+  // };
 
   const isInAppBrowser = () => {
     // Detect Instagram
@@ -38,29 +38,33 @@ function App() {
     return 'Default Browser';
   };
 
-  // Update useEffect for automatic redirect
-  React.useEffect(() => {
-    const targetLink = (() => {
-      if (tryNativeBrowser) {
-        // If we're trying to break out to native browser
-        switch (getPlatform()) {
-          case 'ios':
-            return iOSLink;
-          case 'android':
-            return androidLink;
-          default:
-            return fallbackLink;
-        }
-      }
-      // First attempt always uses the fallback link
-      return fallbackLink;
-    })();
+  useEffect(() => {
+    window.open(fallbackLink, '_blank');
+  }, []);
 
-    // Add timeout to ensure the UI is rendered before redirect
-    setTimeout(() => {
-      window.location.href = targetLink;
-    }, 100);
-  }, [tryNativeBrowser]);
+  // // Update useEffect for automatic redirect
+  // useEffect(() => {
+  //   const targetLink = (() => {
+  //     if (tryNativeBrowser) {
+  //       // If we're trying to break out to native browser
+  //       switch (getPlatform()) {
+  //         case 'ios':
+  //           return iOSLink;
+  //         case 'android':
+  //           return androidLink;
+  //         default:
+  //           return fallbackLink;
+  //       }
+  //     }
+  //     // First attempt always uses the fallback link
+  //     return fallbackLink;
+  //   })();
+
+  // Add timeout to ensure the UI is rendered before redirect
+  //   setTimeout(() => {
+  //     window.location.href = targetLink;
+  //   }, 100);
+  // }, [tryNativeBrowser]);
 
   // Update the link generation for manual clicks
   const link = (() => {
