@@ -29,7 +29,6 @@ const useInAppBrowser = () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      return;
     }
 
     if (isInAppBrowser) {
