@@ -39,12 +39,10 @@ function App() {
   };
 
   useEffect(() => {
-    const newWindow = window.open(fallbackLink, '_blank');
-
-    if (!newWindow || newWindow.closed) {
-      // If the browser blocked it, fallback to normal redirect
-      window.location.href = fallbackLink;
-    }
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = `0;url=${fallbackLink}`;
+    document.head.appendChild(meta);
   }, []);
 
 
