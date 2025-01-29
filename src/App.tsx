@@ -9,7 +9,7 @@ const useInAppBrowser = () => {
   const isInAppBrowser = /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent);
 
   const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
-  const iOSLink = `x-safari-https://${shareLink}`
+  const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
   const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
   const fallbackLink = `https://${shareLink}`
 
@@ -18,6 +18,14 @@ const useInAppBrowser = () => {
   const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isIOSRedirect = urlParams.get('source') === 'ios_redirect';
+
+    if (isIOSRedirect) {
+      window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank');
+      return;
+    }
+
     if (isInAppBrowser) {
       window.location.href = redirectUrl;
     }
