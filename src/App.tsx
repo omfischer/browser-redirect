@@ -9,7 +9,7 @@ const useInAppBrowser = () => {
   const isInAppBrowser = /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent);
 
   // const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
-  const shareLink = 'https://browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
+  const shareLink = 'www.browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
   const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
   const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
   const fallbackLink = `https://${shareLink}`
