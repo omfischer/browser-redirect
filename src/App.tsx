@@ -39,11 +39,9 @@ function App() {
   };
 
   useEffect(() => {
-    const isFacebookApp = /FBAN|FBAV|Messenger/.test(navigator.userAgent);
-    const isInstagramApp = /Instagram/.test(navigator.userAgent);
 
-    if (isFacebookApp || isInstagramApp) {
-      window.location.href = `x-safari-https://${fallbackLink}`;
+    if (isInAppBrowser()) {
+      window.open(iOSLink, '_blank');
     } else {
       window.location.href = fallbackLink;
     }
