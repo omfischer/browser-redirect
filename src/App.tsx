@@ -23,21 +23,15 @@ const useInAppBrowser = () => {
     const isIOSRedirect = urlParams.get('source') === 'ios_redirect';
 
     if (isIOSRedirect) {
-      const link = document.createElement('a');
-      link.href = 'jotta://share/3gp6ac5asmf5';
-      link.target = '_blank';
-      document.body.appendChild(link);
-
       setTimeout(() => {
-        link.click();
-        document.body.removeChild(link);
-      }, 1000); // 1 second delay
-
-      return;
+        window.location.replace('https://www.jottacloud.com/share/3gp6ac5asmf5');
+      }, 100);
     }
 
     if (isInAppBrowser) {
-      window.location.href = redirectUrl;
+      setTimeout(() => {
+        window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+      }, 100);
     }
   }, []);
 
