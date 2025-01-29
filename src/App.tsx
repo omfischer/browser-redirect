@@ -38,8 +38,12 @@ function App() {
     return 'Default Browser';
   };
 
+  // useEffect(() => {
+  //   window.open(fallbackLink, '_blank');
+  // }, []);
+
   useEffect(() => {
-    window.open(fallbackLink, '_blank');
+    window.location.href = fallbackLink;
   }, []);
 
   // // Update useEffect for automatic redirect
