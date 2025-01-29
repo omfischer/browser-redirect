@@ -29,9 +29,7 @@ const useInAppBrowser = () => {
     }
 
     if (isInAppBrowser) {
-      setTimeout(() => {
-        window.open(redirectUrl, '_blank', 'noopener,noreferrer');
-      }, 100);
+      window.location.href = redirectUrl;
     }
   }, []);
 
