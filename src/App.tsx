@@ -42,8 +42,6 @@ function App() {
 
     if (isInAppBrowser()) {
       window.location.href = iOSLink; // Forces Safari to open
-    } else {
-      window.location.href = fallbackLink; // Normal redirect
     }
   }, []);
 
