@@ -114,7 +114,7 @@ function App() {
           3: hva skjer med denne? Android prefix
         </a>
         <br />
-        <a href={fallbackLink} target="_blank">
+        <a href={fallbackLink}>
           4: hva skjer med denne? Standard link
         </a>
       </div>
