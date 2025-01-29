@@ -47,16 +47,16 @@ function App() {
     }
   }, []);
 
-  return null; // No UI, just redirects
+  // return null; // No UI, just redirects
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (isInAppBrowser() === 'Facebook or Messenger') {
-      window.open(iOSLink, '_blank');
-    } else {
-      window.location.href = fallbackLink;
-    }
-  }, []);
+  //   if (isInAppBrowser() === 'Facebook or Messenger') {
+  //     window.open(iOSLink, '_blank');
+  //   } else {
+  //     window.location.href = fallbackLink;
+  //   }
+  // }, []);
 
 
 
