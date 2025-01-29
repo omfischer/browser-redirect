@@ -39,17 +39,12 @@ function App() {
   };
 
   useEffect(() => {
-    const anchor = document.createElement('a');
-    anchor.href = fallbackLink;
-    anchor.target = '_blank'; // Open in a new tab
-    anchor.rel = 'noopener noreferrer';
+    const newWindow = window.open(fallbackLink, '_blank');
 
-    document.body.appendChild(anchor);
-
-    // Delay the click slightly to ensure DOM readiness
-    setTimeout(() => {
-      anchor.click();
-    }, 100);
+    if (!newWindow || newWindow.closed) {
+      // If the browser blocked it, fallback to normal redirect
+      window.location.href = fallbackLink;
+    }
   }, []);
 
 
