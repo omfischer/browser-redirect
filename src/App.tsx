@@ -39,8 +39,16 @@ function App() {
   };
 
   useEffect(() => {
-    window.open(fallbackLink, '_blank');
+    const anchor = document.createElement('a');
+    anchor.href = fallbackLink;
+    anchor.target = '_blank'; // Open in a new tab (optional)
+    anchor.rel = 'noopener noreferrer';
+    anchor.style.display = 'none'; // Hide the anchor element
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor); // Clean up after click
   }, []);
+
 
 
 
