@@ -22,7 +22,7 @@ const useInAppBrowser = () => {
     const isIOSRedirect = urlParams.get('source') === 'ios_redirect';
 
     if (isIOSRedirect) {
-      window.open('https://www.jottacloud.com/share/3gp6ac5asmf5', '_blank');
+      window.location.href = 'jottacloud://share/3gp6ac5asmf5';
       return;
     }
 
