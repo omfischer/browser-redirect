@@ -39,10 +39,14 @@ function App() {
   };
 
   useEffect(() => {
-    const meta = document.createElement('meta');
-    meta.httpEquiv = 'refresh';
-    meta.content = `0;url=${fallbackLink}`;
-    document.head.appendChild(meta);
+    const isFacebookApp = /FBAN|FBAV|Messenger/.test(navigator.userAgent);
+    const isInstagramApp = /Instagram/.test(navigator.userAgent);
+
+    if (isFacebookApp || isInstagramApp) {
+      window.location.href = `x-safari-https://${fallbackLink}`;
+    } else {
+      window.location.href = fallbackLink;
+    }
   }, []);
 
 
