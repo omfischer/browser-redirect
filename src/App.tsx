@@ -41,12 +41,16 @@ function App() {
   useEffect(() => {
     const anchor = document.createElement('a');
     anchor.href = fallbackLink;
-    anchor.target = '_blank'; // Open in a new tab (optional)
+    anchor.target = '_blank'; // Open in a new tab
     anchor.rel = 'noopener noreferrer';
-    anchor.style.display = 'none'; // Hide the anchor element
+    anchor.className = 'hidden-redirect-link';
+
     document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor); // Clean up after click
+
+    // Delay the click slightly to ensure DOM readiness
+    setTimeout(() => {
+      anchor.click();
+    }, 100);
   }, []);
 
 
