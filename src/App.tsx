@@ -24,11 +24,16 @@ const useInAppBrowser = () => {
 
     if (isIOSRedirect) {
       const link = document.createElement('a');
-      link.href = 'https://www.jottacloud.com/share/3gp6ac5asmf5';
+      link.href = 'jotta://share/3gp6ac5asmf5';
       link.target = '_blank';
       document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+
+      setTimeout(() => {
+        link.click();
+        document.body.removeChild(link);
+      }, 1000); // 1 second delay
+
+      return;
     }
 
     if (isInAppBrowser) {
