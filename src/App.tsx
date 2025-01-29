@@ -38,18 +38,13 @@ function App() {
     return 'Default Browser';
   };
 
-  // WORKS!! AUTO THROW OUT OF IN APP BROWSER INTO DEFAULT BROWSER
-  // useEffect(() => {
-
-  //   if (isInAppBrowser()) {
-  //     window.location.href = iOSLink; // Forces Safari to open
-  //   } else {
-  //     window.location.href = fallbackLink; // Normal redirect
-  //   }
-  // }, []);
-
   useEffect(() => {
-    window.location.href = fallbackLink;
+
+    if (isInAppBrowser()) {
+      window.location.href = iOSLink; // Forces Safari to open
+    } else {
+      window.location.href = fallbackLink; // Normal redirect
+    }
   }, []);
 
   // return null; // No UI, just redirects
