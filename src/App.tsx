@@ -41,6 +41,17 @@ function App() {
   useEffect(() => {
 
     if (isInAppBrowser()) {
+      window.location.href = iOSLink; // Forces Safari to open
+    } else {
+      window.location.href = fallbackLink; // Normal redirect
+    }
+  }, []);
+
+  return null; // No UI, just redirects
+
+  useEffect(() => {
+
+    if (isInAppBrowser() === 'Facebook or Messenger') {
       window.open(iOSLink, '_blank');
     } else {
       window.location.href = fallbackLink;
