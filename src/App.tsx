@@ -41,6 +41,7 @@ function App() {
   useEffect(() => {
     const anchor = document.createElement('a');
     anchor.href = fallbackLink;
+    anchor.target = '_blank'; // Open in a new tab
     anchor.rel = 'noopener noreferrer';
 
     document.body.appendChild(anchor);
