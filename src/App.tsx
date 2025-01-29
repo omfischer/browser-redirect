@@ -24,7 +24,7 @@ const useInAppBrowser = () => {
 
     if (isIOSRedirect) {
       const link = document.createElement('a');
-      link.href = 'jotta://share/3gp6ac5asmf5';
+      link.href = 'https://www.jottacloud.com/share/3gp6ac5asmf5';
       link.target = '_blank';
       document.body.appendChild(link);
       link.click();
