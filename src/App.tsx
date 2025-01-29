@@ -3,17 +3,25 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { useEffect } from 'react'
 
-function App() {
+const useInAppBrowser = () => {
+  const userAgent = navigator.userAgent || navigator.vendor;
+
+  const isInAppBrowser = /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent);
+
   const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
   const iOSLink = `x-safari-https://${shareLink}`
   const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
   const fallbackLink = `https://${shareLink}`
 
+  return { isInAppBrowser, iOSLink, androidLink, fallbackLink };
+};
+
+function App() {
   // Add URL params check
   // const urlParams = new URLSearchParams(window.location.search);
   // const tryNativeBrowser = urlParams.get('openInNative') === 'true';
+  const { isInAppBrowser, iOSLink, androidLink, fallbackLink } = useInAppBrowser();
 
-  const userAgent = navigator.userAgent || navigator.vendor;
   // const getPlatform = () => {
 
   //   if (/iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)) {
@@ -25,22 +33,9 @@ function App() {
   //   return 'other';
   // };
 
-  const isInAppBrowser = () => {
-    // Detect Instagram
-    if (/Instagram/.test(userAgent)) return 'Instagram';
-
-    // Detect Facebook or Messenger
-    if (/FBAN|FBAV|Messenger/.test(userAgent)) return 'Facebook or Messenger';
-
-    // Detect other common in-app browsers (customize as needed)
-    if (/Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent)) return 'Other In-App Browser';
-
-    return 'Default Browser';
-  };
-
   useEffect(() => {
 
-    if (isInAppBrowser()) {
+    if (isInAppBrowser) {
       window.location.href = iOSLink; // Forces Safari to open
     }
   }, []);
@@ -92,8 +87,12 @@ function App() {
 
   return (
     <>
+      <head>
+        <meta property="og:image" content="https://example.com/image.jpg" />
+        <meta property="og:title" content="Your Title" />
+        <meta property="og:description" content="Your Description" />
+      </head>
       <div>
-        <p>Hi Jan! You are using {isInAppBrowser()}</p>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -101,9 +100,6 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <p>
-        This is the {isInAppBrowser()}
-      </p>
       <div className="flex flex-col gap-2">
         <a href={link} target="_blank" className="block">
           1: Device agnostisk
