@@ -41,7 +41,7 @@ function App() {
       </div>
       <div className="flex flex-col gap-2">
 
-        <a href="www.jottacloud.com/share/3gp6ac5asmf5">
+        <a href="https://www.jottacloud.com/share/3gp6ac5asmf5">
           gå til appen
         </a>
       </div>
