@@ -38,13 +38,11 @@ function App() {
     return 'Default Browser';
   };
 
-  // useEffect(() => {
-  //   window.open(fallbackLink, '_blank');
-  // }, []);
-
   useEffect(() => {
-    window.location.href = fallbackLink;
+    window.open(fallbackLink, '_blank');
   }, []);
+
+
 
   // // Update useEffect for automatic redirect
   // useEffect(() => {
