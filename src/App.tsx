@@ -87,11 +87,6 @@ function App() {
 
   return (
     <>
-      <head>
-        <meta property="og:image" content="https://example.com/image.jpg" />
-        <meta property="og:title" content="Your Title" />
-        <meta property="og:description" content="Your Description" />
-      </head>
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
