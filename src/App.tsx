@@ -3,13 +3,14 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { useEffect } from 'react'
 
-const useInAppBrowser = () => {
+export const useInAppBrowser = () => {
   const userAgent = navigator.userAgent || navigator.vendor;
 
   const isInAppBrowser = /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent);
 
   // const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
-  const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
+  // const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
+  const shareLink = window.location.href
   const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
   const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
   const fallbackLink = `https://${shareLink}`
@@ -34,9 +35,42 @@ const useInAppBrowser = () => {
   return null;
 };
 
+export const useInAppBrowserBreakout = () => {
+
+  useEffect(() => {
+
+    const userAgent = navigator.userAgent || navigator.vendor
+    const isAndroid = /android/i.test(userAgent)
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)
+
+    if (isIOS) {
+      const url = new URL(window.location.href)
+      const isInAppBrowser =
+        /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(
+          userAgent,
+        )
+      const action = url.searchParams.get('action')
+      if (!action && isInAppBrowser) {
+        url.protocol = 'x-safari-https'
+        url.searchParams.set('action', 'ios-breakout')
+        window.location.href = url.toString()
+      } else if (!action || action === 'ios-breakout') {
+        url.searchParams.set('action', 'ios-replace')
+        window.location.replace(url) // Should open app if installed
+      }
+    } else if (isAndroid) {
+      const androidLink = new URL(window.location.href)
+      androidLink.protocol = 'intent'
+      androidLink.hash =
+        'Intent;scheme=https;action=android.intent.action.VIEW;end'
+      window.location.href = androidLink.toString()
+    }
+  }, [])
+}
+
 function App() {
   useInAppBrowser();
-
+  // useInAppBrowserBreakout();
   return (
     <>
       <div>
