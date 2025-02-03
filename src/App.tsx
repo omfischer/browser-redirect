@@ -38,7 +38,6 @@ export const useInAppBrowser = () => {
 export const useInAppBrowserBreakout = () => {
 
   useEffect(() => {
-
     const userAgent = navigator.userAgent || navigator.vendor
     const isAndroid = /android/i.test(userAgent)
     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)
@@ -69,13 +68,25 @@ export const useInAppBrowserBreakout = () => {
 }
 
 function App() {
+  const navig = JSON.stringify(navigator);
+
   // useInAppBrowser();
   // useInAppBrowserBreakout();
   return (
     <>
       <div>
+        <h1>Navigator</h1>
+        <p>{navig}</p>
+        <br />
+        <br />
+        <h1>UserAgent</h1>
         <p>{navigator.userAgent}</p>
+        <br />
+        <br />
+        <h1>Vendor</h1>
         <p>{navigator.vendor}</p>
+        <br />
+        <br />
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
