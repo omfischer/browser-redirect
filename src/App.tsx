@@ -74,7 +74,7 @@ function App() {
     navigatorProps[prop] = window.navigator[prop]
   }
 
-  // useInAppBrowser();
+  useInAppBrowser();
   // useInAppBrowserBreakout();
   return (
     <>
