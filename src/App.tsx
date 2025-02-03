@@ -23,7 +23,8 @@ const useInAppBrowser = () => {
     const isIOSRedirect = urlParams.get('source') === 'ios_redirect';
 
     if (isIOSRedirect) {
-      window.location.replace('https://charlie.jotta.cloud/share/3gp6ac5asmf5');
+      // window.location.replace('https://charlie.jotta.cloud/share/3gp6ac5asmf5');
+      window.location.replace('https://www.jottacloud.com/share/3gp6ac5asmf5');
     }
 
     if (isInAppBrowser) {
