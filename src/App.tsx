@@ -69,11 +69,13 @@ export const useInAppBrowserBreakout = () => {
 }
 
 function App() {
-  useInAppBrowser();
+  // useInAppBrowser();
   // useInAppBrowserBreakout();
   return (
     <>
       <div>
+        <p>{navigator.userAgent}</p>
+        <p>{navigator.vendor}</p>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
