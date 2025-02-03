@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -9,16 +8,15 @@ export const useInAppBrowser = () => {
 
   const isInAppBrowser = /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(userAgent);
 
-  const shareLink = 'https://www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
-  // const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
-  // const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
-  // const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
-  // const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
-  // const fallbackLink = `https://${shareLink}`
+  // const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
+  const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
+  const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
+  const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
+  const fallbackLink = `https://${shareLink}`
 
-  // const isAndroid = /android/i.test(userAgent);
-  // const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-  // const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
+  const isAndroid = /android/i.test(userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
+  const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -29,7 +27,7 @@ export const useInAppBrowser = () => {
     }
 
     if (isInAppBrowser) {
-      window.location.href = shareLink;
+      window.location.href = redirectUrl;
     }
   }, []);
 
@@ -39,6 +37,7 @@ export const useInAppBrowser = () => {
 export const useInAppBrowserBreakout = () => {
 
   useEffect(() => {
+
     const userAgent = navigator.userAgent || navigator.vendor
     const isAndroid = /android/i.test(userAgent)
     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)
@@ -69,30 +68,11 @@ export const useInAppBrowserBreakout = () => {
 }
 
 function App() {
-  const navigatorProps = {}
-  for (const prop in window.navigator) {
-    // @ts-ignore
-    navigatorProps[prop] = window.navigator[prop]
-  }
-
-  // useInAppBrowser();
+  useInAppBrowser();
   // useInAppBrowserBreakout();
   return (
     <>
       <div>
-        <h1>Navigator</h1>
-        <pre>{JSON.stringify(navigatorProps, undefined, 2)}</pre>
-
-        <br />
-        <br />
-        <h1>UserAgent</h1>
-        <p>{navigator.userAgent}</p>
-        <br />
-        <br />
-        <h1>Vendor</h1>
-        <p>{navigator.vendor}</p>
-        <br />
-        <br />
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
