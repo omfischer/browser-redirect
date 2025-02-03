@@ -75,7 +75,7 @@ function App() {
   }
 
   // useInAppBrowser();
-  useInAppBrowserBreakout();
+  // useInAppBrowserBreakout();
   return (
     <>
       <h1>Navigator</h1>
