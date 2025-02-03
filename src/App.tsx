@@ -11,13 +11,13 @@ export const useInAppBrowser = () => {
   // const shareLink = 'www.jottacloud.com/share/3gp6ac5asmf5' // TODO: use query param
   // const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
   const shareLink = 'browser-redirect-git-main-omfischers-projects.vercel.app/' // TODO: use query param
-  const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
-  const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
+  // const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`
+  // const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`
   const fallbackLink = `https://${shareLink}`
 
-  const isAndroid = /android/i.test(userAgent);
-  const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-  const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
+  // const isAndroid = /android/i.test(userAgent);
+  // const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
+  // const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -28,7 +28,7 @@ export const useInAppBrowser = () => {
     }
 
     if (isInAppBrowser) {
-      window.location.href = redirectUrl;
+      window.location.href = fallbackLink;
     }
   }, []);
 
