@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -68,7 +69,11 @@ export const useInAppBrowserBreakout = () => {
 }
 
 function App() {
-  const navig = JSON.stringify(navigator);
+  const navigatorProps = {}
+  for (const prop in window.navigator) {
+    // @ts-ignore
+    navigatorProps[prop] = window.navigator[prop]
+  }
 
   // useInAppBrowser();
   // useInAppBrowserBreakout();
@@ -76,7 +81,8 @@ function App() {
     <>
       <div>
         <h1>Navigator</h1>
-        <p>{navig}</p>
+        <pre>{JSON.stringify(navigatorProps, undefined, 2)}</pre>
+
         <br />
         <br />
         <h1>UserAgent</h1>
