@@ -68,10 +68,19 @@ export const useInAppBrowserBreakout = () => {
 }
 
 function App() {
-  useInAppBrowser();
-  // useInAppBrowserBreakout();
+  const navigatorProps = {}
+  for (const prop in window.navigator) {
+    // @ts-ignore
+    navigatorProps[prop] = window.navigator[prop]
+  }
+
+  // useInAppBrowser();
+  useInAppBrowserBreakout();
   return (
     <>
+      <h1>Navigator</h1>
+      <pre>{JSON.stringify(navigatorProps, undefined, 2)}</pre>
+
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
