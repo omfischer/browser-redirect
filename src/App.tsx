@@ -2,6 +2,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { useEffect } from 'react'
+import { useState } from "react";
 
 export const useInAppBrowser = () => {
   const userAgent = navigator.userAgent || navigator.vendor;
@@ -34,38 +35,45 @@ export const useInAppBrowser = () => {
   return null;
 };
 
-export const useInAppBrowserBreakout = () => {
 
-  useEffect(() => {
+export const useImageShare = () => {
+  const [isSharing, setIsSharing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    const userAgent = navigator.userAgent || navigator.vendor
-    const isAndroid = /android/i.test(userAgent)
-    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window)
+  const shareImages = async (imageUrls: string[]) => {
+    setIsSharing(true);
+    setError(null);
 
-    if (isIOS) {
-      const url = new URL(window.location.href)
-      const isInAppBrowser =
-        /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(
-          userAgent,
-        )
-      const action = url.searchParams.get('action')
-      if (!action && isInAppBrowser) {
-        url.protocol = 'x-safari-https'
-        url.searchParams.set('action', 'ios-breakout')
-        window.location.href = url.toString()
-      } else if (!action || action === 'ios-breakout') {
-        url.searchParams.set('action', 'ios-replace')
-        window.location.replace(url) // Should open app if installed
+    try {
+      const files = await Promise.all(
+        imageUrls.map(async (url, index) => {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Failed to fetch image ${index + 1}`);
+          const blob = await response.blob();
+          return new File([blob], `image${index + 1}.jpg`, { type: blob.type });
+        })
+      );
+
+      if (navigator.canShare && navigator.canShare({ files })) {
+        await navigator.share({
+          files,
+          title: "Save Images",
+          text: "Download these images to your Photos app!"
+        });
+      } else {
+        throw new Error("Sharing multiple files is not supported on this browser.");
       }
-    } else if (isAndroid) {
-      const androidLink = new URL(window.location.href)
-      androidLink.protocol = 'intent'
-      androidLink.hash =
-        'Intent;scheme=https;action=android.intent.action.VIEW;end'
-      window.location.href = androidLink.toString()
+    } catch (err) {
+      setError((err as Error).message);
+      console.error("Error sharing images:", err);
+    } finally {
+      setIsSharing(false);
     }
-  }, [])
-}
+  };
+
+  return { shareImages, isSharing, error };
+};
+
 
 function App() {
   const navigatorProps = {}
@@ -75,7 +83,6 @@ function App() {
   }
 
   useInAppBrowser();
-  // useInAppBrowserBreakout();
   return (
     <>
       <h1>Navigator</h1>
