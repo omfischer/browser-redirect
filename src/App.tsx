@@ -74,6 +74,27 @@ export const useImageShare = () => {
   return { shareImages, isSharing, error };
 };
 
+const ImageShareButton = () => {
+  const { shareImages, isSharing, error } = useImageShare();
+
+  const handleShare = () => {
+    shareImages([
+      "/images/image1.jpg",
+      "/images/image2.jpg",
+      "/images/image3.jpg"
+    ]);
+  };
+
+  return (
+    <div>
+      <button onClick={handleShare} disabled={isSharing}>
+        {isSharing ? "Sharing..." : "Share Images"}
+      </button>
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+    </div>
+  );
+};
+
 
 function App() {
   const navigatorProps = {}
@@ -87,6 +108,8 @@ function App() {
     <>
       <h1>Navigator</h1>
       <pre>{JSON.stringify(navigatorProps, undefined, 2)}</pre>
+
+      <ImageShareButton />
 
       <div>
         <a href="https://vite.dev" target="_blank">
