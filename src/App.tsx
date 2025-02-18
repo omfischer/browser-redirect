@@ -107,21 +107,29 @@ const ImageShareButton = () => {
 
 // ✅ Main App Component
 function App() {
-  const navigatorProps: Record<string, any> = {};
-  for (const prop in window.navigator) {
-    // @ts-ignore
-    navigatorProps[prop] = window.navigator[prop];
-  }
+  const handleCopy = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault(); // Prevents default anchor behavior
+    const textToCopy = 'Text to be copied';
 
-  useInAppBrowser();
+    // Use the Clipboard API if available
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => {
+        console.log('Copied to clipboard successfully!');
+        // Optionally, display a success message to the user
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+        // Optionally, handle the error (e.g., show an error message)
+      });
+  };
 
   return (
     <>
       <ImageShareButton />
 
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+        <a href="#" onClick={handleCopy}>
+          Click to copy
         </a>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
