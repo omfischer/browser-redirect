@@ -1,109 +1,108 @@
 import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 // ✅ In-App Browser Detection & Redirection Hook
-export const useInAppBrowser = () => {
-  useEffect(() => {
-    const userAgent = navigator.userAgent || navigator.vendor;
-    const isInAppBrowser =
-      /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(
-        userAgent
-      );
+// export const useInAppBrowser = () => {
+//   useEffect(() => {
+//     const userAgent = navigator.userAgent || navigator.vendor;
+//     const isInAppBrowser =
+//       /Instagram|FBAN|FBAV|Messenger|Line|Snapchat|Twitter|WeChat|TikTok/.test(
+//         userAgent
+//       );
 
-    const shareLink =
-      "browser-redirect-git-main-omfischers-projects.vercel.app/";
-    const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`;
-    const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
-    const fallbackLink = `https://${shareLink}`;
+//     const shareLink =
+//       "browser-redirect-git-main-omfischers-projects.vercel.app/";
+//     const iOSLink = `x-safari-https://${shareLink}?source=ios_redirect`;
+//     const androidLink = `intent://${shareLink}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
+//     const fallbackLink = `https://${shareLink}`;
 
-    const isAndroid = /android/i.test(userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !("MSStream" in window);
-    const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
+//     const isAndroid = /android/i.test(userAgent);
+//     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !("MSStream" in window);
+//     const redirectUrl = isIOS ? iOSLink : isAndroid ? androidLink : fallbackLink;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const isIOSRedirect = urlParams.get("source") === "ios_redirect";
+//     const urlParams = new URLSearchParams(window.location.search);
+//     const isIOSRedirect = urlParams.get("source") === "ios_redirect";
 
-    if (isIOSRedirect) {
-      window.location.href = "jotta://files/share/3gp6ac5asmf5"
-    } else if (isInAppBrowser) {
-      window.location.href = redirectUrl;
-    }
-  }, []);
+//     if (isIOSRedirect) {
+//       window.location.href = "jotta://files/share/3gp6ac5asmf5"
+//     } else if (isInAppBrowser) {
+//       window.location.href = redirectUrl;
+//     }
+//   }, []);
 
-  return null;
-};
+//   return null;
+// };
 
-// ✅ Image Sharing Hook with Improved Handling
-export const useImageShare = () => {
-  const [isSharing, setIsSharing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+// // ✅ Image Sharing Hook with Improved Handling
+// export const useImageShare = () => {
+//   const [isSharing, setIsSharing] = useState(false);
+//   const [error, setError] = useState<string | null>(null);
 
-  const shareImages = async (imageUrls: string[]) => {
-    setIsSharing(true);
-    setError(null);
+//   const shareImages = async (imageUrls: string[]) => {
+//     setIsSharing(true);
+//     setError(null);
 
-    try {
-      const baseUrl = window.location.origin; // Ensure full URLs
-      const files = await Promise.all(
-        imageUrls.map(async (url, index) => {
-          const fullUrl = url.startsWith("/")
-            ? `${baseUrl}${url}`
-            : url;
+//     try {
+//       const baseUrl = window.location.origin; // Ensure full URLs
+//       const files = await Promise.all(
+//         imageUrls.map(async (url, index) => {
+//           const fullUrl = url.startsWith("/")
+//             ? `${baseUrl}${url}`
+//             : url;
 
-          const response = await fetch(fullUrl, { mode: "cors" });
-          if (!response.ok)
-            throw new Error(`Failed to fetch image ${index + 1}`);
+//           const response = await fetch(fullUrl, { mode: "cors" });
+//           if (!response.ok)
+//             throw new Error(`Failed to fetch image ${index + 1}`);
 
-          const blob = await response.blob();
-          return new File([blob], `image${index + 1}.jpg`, {
-            type: blob.type,
-          });
-        })
-      );
+//           const blob = await response.blob();
+//           return new File([blob], `image${index + 1}.jpg`, {
+//             type: blob.type,
+//           });
+//         })
+//       );
 
-      if (navigator.canShare && navigator.canShare({ files })) {
-        await navigator.share({
-          files,
-          title: "Save Images",
-          text: "Download these images to your Photos app!",
-        });
-      } else {
-        throw new Error("Sharing multiple files is not supported on this browser.");
-      }
-    } catch (err) {
-      setError((err as Error).message);
-      console.error("Error sharing images:", err);
-    } finally {
-      setIsSharing(false);
-    }
-  };
+//       if (navigator.canShare && navigator.canShare({ files })) {
+//         await navigator.share({
+//           files,
+//           title: "Save Images",
+//           text: "Download these images to your Photos app!",
+//         });
+//       } else {
+//         throw new Error("Sharing multiple files is not supported on this browser.");
+//       }
+//     } catch (err) {
+//       setError((err as Error).message);
+//       console.error("Error sharing images:", err);
+//     } finally {
+//       setIsSharing(false);
+//     }
+//   };
 
-  return { shareImages, isSharing, error };
-};
+//   return { shareImages, isSharing, error };
+// };
 
 // ✅ Image Share Button Component
-const ImageShareButton = () => {
-  const { shareImages, isSharing, error } = useImageShare();
+// const ImageShareButton = () => {
+//   const { shareImages, isSharing, error } = useImageShare();
 
-  const handleShare = () => {
-    shareImages([
-      "/images/image1.jpg",
-      "/images/image2.jpg",
-      "/images/image3.jpg",
-    ]);
-  };
+//   const handleShare = () => {
+//     shareImages([
+//       "/images/image1.jpg",
+//       "/images/image2.jpg",
+//       "/images/image3.jpg",
+//     ]);
+//   };
 
-  return (
-    <div>
-      <button onClick={handleShare} disabled={isSharing}>
-        {isSharing ? "Sharing..." : "Share Images"}
-      </button>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-    </div>
-  );
-};
+//   return (
+//     <div>
+//       <button onClick={handleShare} disabled={isSharing}>
+//         {isSharing ? "Sharing..." : "Share Images"}
+//       </button>
+//       {error && <p style={{ color: "red" }}>Error: {error}</p>}
+//     </div>
+//   );
+// };
 
 // ✅ Main App Component
 function App() {
@@ -125,7 +124,7 @@ function App() {
 
   return (
     <>
-      <ImageShareButton />
+      {/* <ImageShareButton /> */}
 
       <div>
         <a href="#" onClick={handleCopy}>
