@@ -131,6 +131,9 @@ function App() {
         <a href="#" onClick={handleCopy}>
           Click to copy
         </a>
+        <div>
+          {navigator.userAgent.toString()}
+        </div>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
