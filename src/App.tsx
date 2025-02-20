@@ -132,7 +132,9 @@ function App() {
           Click to copy
         </a>
         <div>
-          {navigator.userAgent.toString()}
+          User Agent:   {navigator.userAgent.toString()}
+          <br />
+          Vendor: {navigator.vendor.toString()}
         </div>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
