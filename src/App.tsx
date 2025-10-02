@@ -136,10 +136,6 @@ function App() {
           <br />
           Vendor: {navigator.vendor.toString()}
         </div>
-        <div>
-
-          {window.navigator.standalone && <div> "Likely inside an in-app browser (like X)"</div>}
-        </div>
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
