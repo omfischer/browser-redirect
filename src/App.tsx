@@ -149,7 +149,7 @@ function App() {
       <span>This is the url you wll go to: {redirectUrl}</span>
 
       <div className="flex flex-col gap-2">
-        <a href="jotta://files/share/3gp6ac5asmf5">Gå til appen</a>
+        <a href="https://www.gooogle.com">https://www.gooogle.com</a>
       </div>
     </>
   );
