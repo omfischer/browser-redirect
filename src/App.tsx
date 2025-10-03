@@ -1,7 +1,7 @@
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 // import { useEffect, useState } from "react";
-import { useInAppBrowserRedirect } from "./useInAppBrowserRedirect";
+// import { useInAppBrowserRedirect } from "./useInAppBrowserRedirect";
 
 // ✅ In-App Browser Detection & Redirection Hook
 // export const useInAppBrowser = () => {
@@ -107,7 +107,7 @@ import { useInAppBrowserRedirect } from "./useInAppBrowserRedirect";
 
 // ✅ Main App Component
 function App() {
-  useInAppBrowserRedirect();
+  // useInAppBrowserRedirect();
   const handleCopy = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault(); // Prevents default anchor behavior
     const textToCopy = 'Text to be copied';
