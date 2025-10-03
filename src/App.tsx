@@ -1,5 +1,6 @@
 import reactLogo from "./assets/react.svg";
 import "./App.css";
+import { BreakoutButton } from "./components/BreakoutButton";
 // import { useEffect, useState } from "react";
 // import { useInAppBrowserRedirect } from "./useInAppBrowserRedirect";
 
@@ -150,6 +151,14 @@ function App() {
 
       <div className="flex flex-col gap-2">
         <a href="x-safari-https://www.jottacloud.com/share/3gp6ac5asmf5">https://www.jottacloud.com</a>
+        <BreakoutButton
+          canonicalUrl="https://www.jottacloud.com/share/3gp6ac5asmf5"
+          universalLink="https://www.jottacloud.com/share/3gp6ac5asmf5"
+          // Provide if you have it (otherwise omit)
+          customSchemeUrl="jotta://share/3gp6ac5asmf5"
+          // Consider leaving this null to avoid surprising store jumps:
+          appStoreUrl={null}
+        />
       </div>
     </>
   );
