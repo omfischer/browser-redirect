@@ -136,6 +136,7 @@ function App() {
           <br />
           Vendor: {navigator.vendor.toString()}
         </div>
+        hei
         <a href="https://react.dev" target="_blank">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
