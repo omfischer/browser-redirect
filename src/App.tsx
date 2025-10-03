@@ -149,7 +149,7 @@ function App() {
       <span>This is the url you wll go to: {redirectUrl}</span>
 
       <div className="flex flex-col gap-2">
-        <a href="https://www.google.com">https://www.google.com</a>
+        <a href="https://www.jottacloud.com">https://www.jottacloud.com</a>
       </div>
     </>
   );
