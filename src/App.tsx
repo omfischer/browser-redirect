@@ -122,6 +122,8 @@ function App() {
       });
   };
 
+  const redirectUrl = 'https://www.jottacloud.com/share/3gp6ac5asmf5'
+
 
   return (
     <>
@@ -142,8 +144,10 @@ function App() {
         </a>
       </div>
 
+      <span>This is the url you wll go to: {redirectUrl}</span>
+
       <div className="flex flex-col gap-2">
-        <a href="https://www.jottacloud.com/share/3gp6ac5asmf5">
+        <a href={redirectUrl}>
           Gå til appen
         </a>
       </div>
