@@ -1,6 +1,7 @@
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 // import { useEffect, useState } from "react";
+import { useInAppBrowserRedirect } from "./useInAppBrowserRedirect";
 
 // ✅ In-App Browser Detection & Redirection Hook
 // export const useInAppBrowser = () => {
@@ -106,6 +107,7 @@ import "./App.css";
 
 // ✅ Main App Component
 function App() {
+  useInAppBrowserRedirect();
   const handleCopy = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault(); // Prevents default anchor behavior
     const textToCopy = 'Text to be copied';
@@ -147,9 +149,7 @@ function App() {
       <span>This is the url you wll go to: {redirectUrl}</span>
 
       <div className="flex flex-col gap-2">
-        <a href={redirectUrl}>
-          Gå til appen
-        </a>
+        <a href="jotta://files/share/3gp6ac5asmf5">Gå til appen</a>
       </div>
     </>
   );
