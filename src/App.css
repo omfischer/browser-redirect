@@ -158,7 +158,8 @@
 
 .empty-state p,
 .invite-card span,
-.invite-form p {
+.invite-form p,
+.subscriber-list p {
   margin: 0;
   color: #64748b;
   font-size: 0.76rem;
@@ -176,7 +177,8 @@
 
 .empty-state span,
 .invite-card p,
-.invite-form span {
+.invite-form span,
+.subscriber-list > div:first-child span {
   color: #475569;
   line-height: 1.45;
 }
@@ -261,7 +263,8 @@ button {
 }
 
 .photo-form,
-.invite-form {
+.invite-form,
+.subscriber-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -279,6 +282,49 @@ button {
 .invite-form textarea {
   min-height: 110px;
   font-size: 0.82rem;
+}
+
+.subscriber-list {
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 14px;
+}
+
+.subscriber-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.subscriber-row span {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subscriber-row button {
+  min-height: 30px;
+  border: 1px solid #fecdd3;
+  background: #fff1f2;
+  color: #be123c;
+  padding: 0 8px;
+  font-size: 0.76rem;
+}
+
+.empty-subscribers {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #64748b;
+  padding: 12px;
+  text-align: center;
 }
 
 .invite-card {

@@ -14,6 +14,7 @@ type Album = {
   ownerName: string;
   ownerEmail?: string;
   ownerId?: string;
+  subscribers: string[];
   photos: Photo[];
   updatedAt: string;
 };
@@ -33,11 +34,16 @@ type AlbumUser = {
   } | null;
 };
 
+const DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jotta.no";
+const DEFAULT_ALBUM_OWNER_NAME = "Ole-Martin";
+
 const starterAlbum: Album = {
   id: "starter-album",
   title: "North Sea light",
   description: "A small set of images ready to edit, save, and share.",
-  ownerName: "Album",
+  ownerName: DEFAULT_ALBUM_OWNER_NAME,
+  ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
+  subscribers: [],
   updatedAt: new Date().toISOString(),
   photos: [
     {
@@ -76,8 +82,31 @@ function getPrimaryEmail(user: AlbumUser | null | undefined) {
   return user?.primaryEmailAddress?.emailAddress?.toLowerCase() ?? "";
 }
 
+function isDefaultAlbumOwnerEmail(email: string) {
+  return email.trim().toLowerCase() === DEFAULT_ALBUM_OWNER_EMAIL;
+}
+
+function isDefaultOwnerAlbum(album: Album) {
+  return album.ownerEmail?.trim().toLowerCase() === DEFAULT_ALBUM_OWNER_EMAIL;
+}
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email.trim());
+}
+
+function normalizeEmailList(input: unknown) {
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      input
+        .filter((email): email is string => typeof email === "string")
+        .map((email) => email.trim().toLowerCase())
+        .filter(isValidEmail)
+    )
+  );
 }
 
 function normalizeAlbum(input: unknown): Album | null {
@@ -114,6 +143,7 @@ function normalizeAlbum(input: unknown): Album | null {
         ? candidate.ownerEmail.toLowerCase()
         : undefined,
     ownerId: typeof candidate.ownerId === "string" ? candidate.ownerId : undefined,
+    subscribers: normalizeEmailList(candidate.subscribers),
     photos,
     updatedAt:
       typeof candidate.updatedAt === "string"
@@ -139,7 +169,10 @@ function normalizeInvite(input: unknown): AlbumInvite | null {
   }
 
   return {
-    album,
+    album: {
+      ...album,
+      subscribers: Array.from(new Set([...album.subscribers, invitedEmail])),
+    },
     invitedEmail,
     createdAt:
       typeof candidate.createdAt === "string"
@@ -175,6 +208,7 @@ function createInvitePayload(album: Album, invitedEmail: string): AlbumInvite {
     ownerName: album.ownerName.trim(),
     ownerEmail: album.ownerEmail?.trim().toLowerCase(),
     updatedAt: new Date().toISOString(),
+    subscribers: album.subscribers.map((email) => email.trim().toLowerCase()),
     photos: album.photos.map((photo) => ({
       id: photo.id,
       url: photo.url.trim(),
@@ -233,6 +267,26 @@ function getSubscriptionStorageKey(user: AlbumUser) {
   return `minimal-album:subscription:${user.id}`;
 }
 
+function getRevokedSubscriberStorageKey(albumId: string, email: string) {
+  return `minimal-album:revoked:${albumId}:${email}`;
+}
+
+function isAlbumSharedWithEmail(album: Album, email: string) {
+  return album.subscribers.includes(email.trim().toLowerCase());
+}
+
+function isSubscriberRevoked(albumId: string, email: string) {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return (
+    localStorage.getItem(
+      getRevokedSubscriberStorageKey(albumId, email.trim().toLowerCase())
+    ) === "true"
+  );
+}
+
 function AlbumPreview({ album }: { album: Album }) {
   const heroPhoto = album.photos[0];
   const remainingPhotos = album.photos.slice(1);
@@ -270,12 +324,14 @@ function AlbumEditor({
   album,
   onAlbumChange,
   onGenerateInvite,
+  onRemoveSubscriber,
   inviteStatus,
   generatedInviteUrl,
 }: {
   album: Album;
   onAlbumChange: (album: Album) => void;
   onGenerateInvite: (email: string) => void;
+  onRemoveSubscriber: (email: string) => void;
   inviteStatus: string;
   generatedInviteUrl: string;
 }) {
@@ -395,6 +451,26 @@ function AlbumEditor({
         </button>
       </form>
 
+      <section className="subscriber-list" aria-label="Subscribers">
+        <div>
+          <p>Subscribers</p>
+          <span>Members who can open this album from an invite.</span>
+        </div>
+
+        {album.subscribers.length > 0 ? (
+          album.subscribers.map((email) => (
+            <div className="subscriber-row" key={email}>
+              <span>{email}</span>
+              <button type="button" onClick={() => onRemoveSubscriber(email)}>
+                Remove
+              </button>
+            </div>
+          ))
+        ) : (
+          <div className="empty-subscribers">No subscribers yet.</div>
+        )}
+      </section>
+
       <div className="photo-list">
         {album.photos.map((photo, index) => (
           <div className="photo-row" key={photo.id}>
@@ -442,6 +518,25 @@ function NoAlbumAvailable({ message }: { message: string }) {
   );
 }
 
+function AccessPanel() {
+  return (
+    <aside className="workspace-panel" aria-label="Album access">
+      <div className="panel-heading">
+        <p>Access</p>
+      </div>
+
+      <div className="invite-card">
+        <span>Private album</span>
+        <h2>Invite required</h2>
+        <p>
+          This album is owned by {DEFAULT_ALBUM_OWNER_EMAIL}. Open an invite
+          from the owner to subscribe.
+        </p>
+      </div>
+    </aside>
+  );
+}
+
 function SubscribePanel({
   invite,
   signedInEmail,
@@ -453,7 +548,15 @@ function SubscribePanel({
   onSubscribe: () => void;
   onClearInvite: () => void;
 }) {
-  const canSubscribe = signedInEmail === invite.invitedEmail;
+  const canSubscribe =
+    signedInEmail === invite.invitedEmail &&
+    isDefaultOwnerAlbum(invite.album) &&
+    isAlbumSharedWithEmail(invite.album, signedInEmail) &&
+    !isSubscriberRevoked(invite.album.id, signedInEmail);
+  const blockedMessage =
+    signedInEmail === invite.invitedEmail
+      ? "This invite is no longer active for your account."
+      : `Sign in as ${invite.invitedEmail} to subscribe to this album.`;
 
   return (
     <aside className="workspace-panel" aria-label="Album invite">
@@ -479,9 +582,7 @@ function SubscribePanel({
           </button>
         </>
       ) : (
-        <div className="error-line">
-          Sign in as {invite.invitedEmail} to subscribe to this album.
-        </div>
+        <div className="error-line">{blockedMessage}</div>
       )}
 
       <button type="button" className="ghost-button" onClick={onClearInvite}>
@@ -528,17 +629,29 @@ function App() {
   const signedInUser = isSignedIn ? user : null;
   const displayName = getDisplayName(signedInUser);
   const signedInEmail = getPrimaryEmail(signedInUser);
+  const isDefaultAlbumOwner = isDefaultAlbumOwnerEmail(signedInEmail);
   const hasLoadedSignedInUser =
     Boolean(signedInUser) && loadedUserId === signedInUser?.id;
+  const activeSubscribedAlbum =
+    hasLoadedSignedInUser &&
+    !isDefaultAlbumOwner &&
+    subscribedAlbum &&
+    isDefaultOwnerAlbum(subscribedAlbum) &&
+    isAlbumSharedWithEmail(subscribedAlbum, signedInEmail) &&
+    !isSubscriberRevoked(subscribedAlbum.id, signedInEmail)
+      ? subscribedAlbum
+      : null;
 
   const subscribedToPendingInvite =
     hasLoadedSignedInUser &&
     Boolean(pendingInvite) &&
-    subscribedAlbum?.id === pendingInvite?.album.id;
+    activeSubscribedAlbum?.id === pendingInvite?.album.id;
   const shouldShowInviteGate = Boolean(pendingInvite) && !subscribedToPendingInvite;
   const visibleAlbum =
-    hasLoadedSignedInUser && !shouldShowInviteGate ? subscribedAlbum ?? album : null;
-  const canEdit = isLoaded && hasLoadedSignedInUser;
+    hasLoadedSignedInUser && !shouldShowInviteGate
+      ? activeSubscribedAlbum ?? (isDefaultAlbumOwner ? album : null)
+      : null;
+  const canEdit = isLoaded && hasLoadedSignedInUser && isDefaultAlbumOwner;
 
   useEffect(() => {
     if (!isLoaded || !signedInUser) {
@@ -550,15 +663,18 @@ function App() {
       return;
     }
 
-    const ownedAlbumStorageKey = getOwnedAlbumStorageKey(signedInUser);
-    const storedAlbum = localStorage.getItem(ownedAlbumStorageKey);
     let normalizedAlbum: Album | null = null;
 
-    if (storedAlbum) {
-      try {
-        normalizedAlbum = normalizeAlbum(JSON.parse(storedAlbum));
-      } catch {
-        localStorage.removeItem(ownedAlbumStorageKey);
+    if (isDefaultAlbumOwner) {
+      const ownedAlbumStorageKey = getOwnedAlbumStorageKey(signedInUser);
+      const storedAlbum = localStorage.getItem(ownedAlbumStorageKey);
+
+      if (storedAlbum) {
+        try {
+          normalizedAlbum = normalizeAlbum(JSON.parse(storedAlbum));
+        } catch {
+          localStorage.removeItem(ownedAlbumStorageKey);
+        }
       }
     }
 
@@ -569,6 +685,15 @@ function App() {
     if (storedSubscription) {
       try {
         normalizedSubscription = normalizeAlbum(JSON.parse(storedSubscription));
+        if (
+          normalizedSubscription &&
+          (!isDefaultOwnerAlbum(normalizedSubscription) ||
+            !isAlbumSharedWithEmail(normalizedSubscription, signedInEmail) ||
+            isSubscriberRevoked(normalizedSubscription.id, signedInEmail))
+        ) {
+          normalizedSubscription = null;
+          localStorage.removeItem(subscriptionStorageKey);
+        }
       } catch {
         localStorage.removeItem(subscriptionStorageKey);
       }
@@ -576,27 +701,34 @@ function App() {
 
     queueMicrotask(() => {
       setAlbum(
-        normalizedAlbum ?? {
-          ...starterAlbum,
-          id: `album-${signedInUser.id}`,
-          ownerName: displayName,
-          ownerEmail: signedInEmail,
-          ownerId: signedInUser.id,
-          updatedAt: new Date().toISOString(),
-        }
+        isDefaultAlbumOwner
+          ? normalizedAlbum ?? {
+              ...starterAlbum,
+              id: `album-${signedInUser.id}`,
+              ownerName: displayName,
+              ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
+              ownerId: signedInUser.id,
+              updatedAt: new Date().toISOString(),
+            }
+          : null
       );
       setSubscribedAlbum(normalizedSubscription);
       setLoadedUserId(signedInUser.id);
     });
-  }, [displayName, isLoaded, signedInEmail, signedInUser]);
+  }, [displayName, isDefaultAlbumOwner, isLoaded, signedInEmail, signedInUser]);
 
   useEffect(() => {
-    if (!album || !signedInUser || loadedUserId !== signedInUser.id) {
+    if (
+      !album ||
+      !signedInUser ||
+      loadedUserId !== signedInUser.id ||
+      !isDefaultAlbumOwner
+    ) {
       return;
     }
 
     localStorage.setItem(getOwnedAlbumStorageKey(signedInUser), JSON.stringify(album));
-  }, [album, loadedUserId, signedInUser]);
+  }, [album, isDefaultAlbumOwner, loadedUserId, signedInUser]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -610,7 +742,7 @@ function App() {
   }, []);
 
   const handleGenerateInvite = (email: string) => {
-    if (!album) {
+    if (!album || !isDefaultAlbumOwner) {
       return;
     }
 
@@ -622,13 +754,28 @@ function App() {
       return;
     }
 
-    const inviteUrl = makeInviteUrl(album, normalizedEmail);
+    localStorage.removeItem(getRevokedSubscriberStorageKey(album.id, normalizedEmail));
+
+    const nextAlbum = {
+      ...album,
+      subscribers: Array.from(new Set([...album.subscribers, normalizedEmail])),
+      updatedAt: new Date().toISOString(),
+    };
+    const inviteUrl = makeInviteUrl(nextAlbum, normalizedEmail);
+    setAlbum(nextAlbum);
     setGeneratedInviteUrl(inviteUrl);
     setInviteStatus("Invite link generated. Send it manually to the subscriber.");
   };
 
   const handleSubscribe = () => {
-    if (!pendingInvite || !signedInUser || signedInEmail !== pendingInvite.invitedEmail) {
+    if (
+      !pendingInvite ||
+      !signedInUser ||
+      signedInEmail !== pendingInvite.invitedEmail ||
+      !isDefaultOwnerAlbum(pendingInvite.album) ||
+      !isAlbumSharedWithEmail(pendingInvite.album, signedInEmail) ||
+      isSubscriberRevoked(pendingInvite.album.id, signedInEmail)
+    ) {
       return;
     }
 
@@ -659,6 +806,27 @@ function App() {
     }
   };
 
+  const handleRemoveSubscriber = (email: string) => {
+    if (!album || !isDefaultAlbumOwner) {
+      return;
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    localStorage.setItem(
+      getRevokedSubscriberStorageKey(album.id, normalizedEmail),
+      "true"
+    );
+    setAlbum({
+      ...album,
+      subscribers: album.subscribers.filter(
+        (subscriberEmail) => subscriberEmail !== normalizedEmail
+      ),
+      updatedAt: new Date().toISOString(),
+    });
+    setInviteStatus(`${normalizedEmail} was removed from this album.`);
+    setGeneratedInviteUrl("");
+  };
+
   const emptyMessage = useMemo(() => {
     if (!isLoaded) {
       return "Loading album access...";
@@ -667,7 +835,11 @@ function App() {
     if (!signedInUser) {
       return pendingInvite
         ? "Sign in to subscribe to this invite."
-        : "Sign in with an invited account to view an album.";
+        : `Sign in as ${DEFAULT_ALBUM_OWNER_EMAIL} or with an invited account.`;
+    }
+
+    if (!isDefaultAlbumOwner && !pendingInvite) {
+      return `This private album is only visible to ${DEFAULT_ALBUM_OWNER_EMAIL} and invited subscribers.`;
     }
 
     if (pendingInvite && signedInEmail !== pendingInvite.invitedEmail) {
@@ -679,7 +851,7 @@ function App() {
     }
 
     return "You are not subscribed to an album yet.";
-  }, [isLoaded, pendingInvite, signedInEmail, signedInUser]);
+  }, [isDefaultAlbumOwner, isLoaded, pendingInvite, signedInEmail, signedInUser]);
 
   return (
     <div className="app-shell">
@@ -712,7 +884,7 @@ function App() {
           <NoAlbumAvailable message={emptyMessage} />
         )}
 
-        {!canEdit ? (
+        {!isLoaded || !signedInUser ? (
           <AuthPanel />
         ) : shouldShowInviteGate && pendingInvite ? (
           <SubscribePanel
@@ -721,21 +893,22 @@ function App() {
             onSubscribe={handleSubscribe}
             onClearInvite={handleClearInvite}
           />
-        ) : subscribedAlbum ? (
+        ) : activeSubscribedAlbum ? (
           <SubscriptionPanel
-            album={subscribedAlbum}
+            album={activeSubscribedAlbum}
             onReturnToOwnAlbum={handleReturnToOwnAlbum}
           />
-        ) : album ? (
+        ) : canEdit && album ? (
           <AlbumEditor
             album={album}
             onAlbumChange={setAlbum}
             onGenerateInvite={handleGenerateInvite}
+            onRemoveSubscriber={handleRemoveSubscriber}
             inviteStatus={inviteStatus}
             generatedInviteUrl={generatedInviteUrl}
           />
         ) : (
-          <AuthPanel />
+          <AccessPanel />
         )}
       </div>
     </div>

@@ -1,14 +1,17 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { _ as require_react, g as require_jsx_runtime } from "../_libs/@clerk/react+[...].mjs";
 import { n as SignIn$1, r as dist_exports } from "./dist-DgnZ9HRO.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DAnDlDOJ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BHDMmMpF.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
+var DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jotta.no";
 var starterAlbum = {
 	id: "starter-album",
 	title: "North Sea light",
 	description: "A small set of images ready to edit, save, and share.",
-	ownerName: "Album",
+	ownerName: "Ole-Martin",
+	ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
+	subscribers: [],
 	updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
 	photos: [
 		{
@@ -35,8 +38,18 @@ function getDisplayName(user) {
 function getPrimaryEmail(user) {
 	return user?.primaryEmailAddress?.emailAddress?.toLowerCase() ?? "";
 }
+function isDefaultAlbumOwnerEmail(email) {
+	return email.trim().toLowerCase() === DEFAULT_ALBUM_OWNER_EMAIL;
+}
+function isDefaultOwnerAlbum(album) {
+	return album.ownerEmail?.trim().toLowerCase() === DEFAULT_ALBUM_OWNER_EMAIL;
+}
 function isValidEmail(email) {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email.trim());
+}
+function normalizeEmailList(input) {
+	if (!Array.isArray(input)) return [];
+	return Array.from(new Set(input.filter((email) => typeof email === "string").map((email) => email.trim().toLowerCase()).filter(isValidEmail)));
 }
 function normalizeAlbum(input) {
 	if (!input || typeof input !== "object") return null;
@@ -52,6 +65,7 @@ function normalizeAlbum(input) {
 		ownerName: typeof candidate.ownerName === "string" ? candidate.ownerName : "Album",
 		ownerEmail: typeof candidate.ownerEmail === "string" ? candidate.ownerEmail.toLowerCase() : void 0,
 		ownerId: typeof candidate.ownerId === "string" ? candidate.ownerId : void 0,
+		subscribers: normalizeEmailList(candidate.subscribers),
 		photos,
 		updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : (/* @__PURE__ */ new Date()).toISOString()
 	};
@@ -63,7 +77,10 @@ function normalizeInvite(input) {
 	const album = normalizeAlbum(candidate.album);
 	if (!album || !isValidEmail(invitedEmail)) return null;
 	return {
-		album,
+		album: {
+			...album,
+			subscribers: Array.from(new Set([...album.subscribers, invitedEmail]))
+		},
 		invitedEmail,
 		createdAt: typeof candidate.createdAt === "string" ? candidate.createdAt : (/* @__PURE__ */ new Date()).toISOString()
 	};
@@ -92,6 +109,7 @@ function createInvitePayload(album, invitedEmail) {
 			ownerName: album.ownerName.trim(),
 			ownerEmail: album.ownerEmail?.trim().toLowerCase(),
 			updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
+			subscribers: album.subscribers.map((email) => email.trim().toLowerCase()),
 			photos: album.photos.map((photo) => ({
 				id: photo.id,
 				url: photo.url.trim()
@@ -134,6 +152,16 @@ function getOwnedAlbumStorageKey(user) {
 function getSubscriptionStorageKey(user) {
 	return `minimal-album:subscription:${user.id}`;
 }
+function getRevokedSubscriberStorageKey(albumId, email) {
+	return `minimal-album:revoked:${albumId}:${email}`;
+}
+function isAlbumSharedWithEmail(album, email) {
+	return album.subscribers.includes(email.trim().toLowerCase());
+}
+function isSubscriberRevoked(albumId, email) {
+	if (typeof window === "undefined") return false;
+	return localStorage.getItem(getRevokedSubscriberStorageKey(albumId, email.trim().toLowerCase())) === "true";
+}
 function AlbumPreview({ album }) {
 	const heroPhoto = album.photos[0];
 	const remainingPhotos = album.photos.slice(1);
@@ -172,7 +200,7 @@ function AlbumPreview({ album }) {
 		]
 	});
 }
-function AlbumEditor({ album, onAlbumChange, onGenerateInvite, inviteStatus, generatedInviteUrl }) {
+function AlbumEditor({ album, onAlbumChange, onGenerateInvite, onRemoveSubscriber, inviteStatus, generatedInviteUrl }) {
 	const [photoUrl, setPhotoUrl] = (0, import_react.useState)("");
 	const [photoError, setPhotoError] = (0, import_react.useState)("");
 	const [inviteEmail, setInviteEmail] = (0, import_react.useState)("");
@@ -269,6 +297,21 @@ function AlbumEditor({ album, onAlbumChange, onGenerateInvite, inviteStatus, gen
 					})
 				]
 			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+				className: "subscriber-list",
+				"aria-label": "Subscribers",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Subscribers" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Members who can open this album from an invite." })] }), album.subscribers.length > 0 ? album.subscribers.map((email) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "subscriber-row",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: email }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+						type: "button",
+						onClick: () => onRemoveSubscriber(email),
+						children: "Remove"
+					})]
+				}, email)) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "empty-subscribers",
+					children: "No subscribers yet."
+				})]
+			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "photo-list",
 				children: album.photos.map((photo, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -314,8 +357,30 @@ function NoAlbumAvailable({ message }) {
 		] })
 	});
 }
+function AccessPanel() {
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", {
+		className: "workspace-panel",
+		"aria-label": "Album access",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+			className: "panel-heading",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Access" })
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "invite-card",
+			children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "Private album" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "Invite required" }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", { children: [
+					"This album is owned by ",
+					DEFAULT_ALBUM_OWNER_EMAIL,
+					". Open an invite from the owner to subscribe."
+				] })
+			]
+		})]
+	});
+}
 function SubscribePanel({ invite, signedInEmail, onSubscribe, onClearInvite }) {
-	const canSubscribe = signedInEmail === invite.invitedEmail;
+	const canSubscribe = signedInEmail === invite.invitedEmail && isDefaultOwnerAlbum(invite.album) && isAlbumSharedWithEmail(invite.album, signedInEmail) && !isSubscriberRevoked(invite.album.id, signedInEmail);
+	const blockedMessage = signedInEmail === invite.invitedEmail ? "This invite is no longer active for your account." : `Sign in as ${invite.invitedEmail} to subscribe to this album.`;
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", {
 		className: "workspace-panel",
 		"aria-label": "Album invite",
@@ -344,13 +409,9 @@ function SubscribePanel({ invite, signedInEmail, onSubscribe, onClearInvite }) {
 				className: "primary-button",
 				onClick: onSubscribe,
 				children: "Subscribe to album"
-			})] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			})] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "error-line",
-				children: [
-					"Sign in as ",
-					invite.invitedEmail,
-					" to subscribe to this album."
-				]
+				children: blockedMessage
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 				type: "button",
@@ -398,10 +459,13 @@ function App() {
 	const signedInUser = isSignedIn ? user : null;
 	const displayName = getDisplayName(signedInUser);
 	const signedInEmail = getPrimaryEmail(signedInUser);
-	const subscribedToPendingInvite = Boolean(pendingInvite) && subscribedAlbum?.id === pendingInvite?.album.id;
+	const isDefaultAlbumOwner = isDefaultAlbumOwnerEmail(signedInEmail);
+	const hasLoadedSignedInUser = Boolean(signedInUser) && loadedUserId === signedInUser?.id;
+	const activeSubscribedAlbum = hasLoadedSignedInUser && !isDefaultAlbumOwner && subscribedAlbum && isDefaultOwnerAlbum(subscribedAlbum) && isAlbumSharedWithEmail(subscribedAlbum, signedInEmail) && !isSubscriberRevoked(subscribedAlbum.id, signedInEmail) ? subscribedAlbum : null;
+	const subscribedToPendingInvite = hasLoadedSignedInUser && Boolean(pendingInvite) && activeSubscribedAlbum?.id === pendingInvite?.album.id;
 	const shouldShowInviteGate = Boolean(pendingInvite) && !subscribedToPendingInvite;
-	const visibleAlbum = shouldShowInviteGate ? null : subscribedAlbum ?? album;
-	const canEdit = isLoaded && Boolean(signedInUser);
+	const visibleAlbum = hasLoadedSignedInUser && !shouldShowInviteGate ? activeSubscribedAlbum ?? (isDefaultAlbumOwner ? album : null) : null;
+	const canEdit = isLoaded && hasLoadedSignedInUser && isDefaultAlbumOwner;
 	(0, import_react.useEffect)(() => {
 		if (!isLoaded || !signedInUser) {
 			queueMicrotask(() => {
@@ -411,45 +475,53 @@ function App() {
 			});
 			return;
 		}
-		const ownedAlbumStorageKey = getOwnedAlbumStorageKey(signedInUser);
-		const storedAlbum = localStorage.getItem(ownedAlbumStorageKey);
 		let normalizedAlbum = null;
-		if (storedAlbum) try {
-			normalizedAlbum = normalizeAlbum(JSON.parse(storedAlbum));
-		} catch {
-			localStorage.removeItem(ownedAlbumStorageKey);
+		if (isDefaultAlbumOwner) {
+			const ownedAlbumStorageKey = getOwnedAlbumStorageKey(signedInUser);
+			const storedAlbum = localStorage.getItem(ownedAlbumStorageKey);
+			if (storedAlbum) try {
+				normalizedAlbum = normalizeAlbum(JSON.parse(storedAlbum));
+			} catch {
+				localStorage.removeItem(ownedAlbumStorageKey);
+			}
 		}
 		const subscriptionStorageKey = getSubscriptionStorageKey(signedInUser);
 		const storedSubscription = localStorage.getItem(subscriptionStorageKey);
 		let normalizedSubscription = null;
 		if (storedSubscription) try {
 			normalizedSubscription = normalizeAlbum(JSON.parse(storedSubscription));
+			if (normalizedSubscription && (!isDefaultOwnerAlbum(normalizedSubscription) || !isAlbumSharedWithEmail(normalizedSubscription, signedInEmail) || isSubscriberRevoked(normalizedSubscription.id, signedInEmail))) {
+				normalizedSubscription = null;
+				localStorage.removeItem(subscriptionStorageKey);
+			}
 		} catch {
 			localStorage.removeItem(subscriptionStorageKey);
 		}
 		queueMicrotask(() => {
-			setAlbum(normalizedAlbum ?? {
+			setAlbum(isDefaultAlbumOwner ? normalizedAlbum ?? {
 				...starterAlbum,
 				id: `album-${signedInUser.id}`,
 				ownerName: displayName,
-				ownerEmail: signedInEmail,
+				ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
 				ownerId: signedInUser.id,
 				updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-			});
+			} : null);
 			setSubscribedAlbum(normalizedSubscription);
 			setLoadedUserId(signedInUser.id);
 		});
 	}, [
 		displayName,
+		isDefaultAlbumOwner,
 		isLoaded,
 		signedInEmail,
 		signedInUser
 	]);
 	(0, import_react.useEffect)(() => {
-		if (!album || !signedInUser || loadedUserId !== signedInUser.id) return;
+		if (!album || !signedInUser || loadedUserId !== signedInUser.id || !isDefaultAlbumOwner) return;
 		localStorage.setItem(getOwnedAlbumStorageKey(signedInUser), JSON.stringify(album));
 	}, [
 		album,
+		isDefaultAlbumOwner,
 		loadedUserId,
 		signedInUser
 	]);
@@ -462,18 +534,26 @@ function App() {
 		return () => window.removeEventListener("hashchange", handleHashChange);
 	}, []);
 	const handleGenerateInvite = (email) => {
-		if (!album) return;
+		if (!album || !isDefaultAlbumOwner) return;
 		const normalizedEmail = email.trim().toLowerCase();
 		if (!isValidEmail(normalizedEmail)) {
 			setInviteStatus("Enter a valid email address.");
 			setGeneratedInviteUrl("");
 			return;
 		}
-		setGeneratedInviteUrl(makeInviteUrl(album, normalizedEmail));
+		localStorage.removeItem(getRevokedSubscriberStorageKey(album.id, normalizedEmail));
+		const nextAlbum = {
+			...album,
+			subscribers: Array.from(new Set([...album.subscribers, normalizedEmail])),
+			updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+		};
+		const inviteUrl = makeInviteUrl(nextAlbum, normalizedEmail);
+		setAlbum(nextAlbum);
+		setGeneratedInviteUrl(inviteUrl);
 		setInviteStatus("Invite link generated. Send it manually to the subscriber.");
 	};
 	const handleSubscribe = () => {
-		if (!pendingInvite || !signedInUser || signedInEmail !== pendingInvite.invitedEmail) return;
+		if (!pendingInvite || !signedInUser || signedInEmail !== pendingInvite.invitedEmail || !isDefaultOwnerAlbum(pendingInvite.album) || !isAlbumSharedWithEmail(pendingInvite.album, signedInEmail) || isSubscriberRevoked(pendingInvite.album.id, signedInEmail)) return;
 		const subscribed = {
 			...pendingInvite.album,
 			updatedAt: (/* @__PURE__ */ new Date()).toISOString()
@@ -491,13 +571,27 @@ function App() {
 		setSubscribedAlbum(null);
 		if (signedInUser) localStorage.removeItem(getSubscriptionStorageKey(signedInUser));
 	};
+	const handleRemoveSubscriber = (email) => {
+		if (!album || !isDefaultAlbumOwner) return;
+		const normalizedEmail = email.trim().toLowerCase();
+		localStorage.setItem(getRevokedSubscriberStorageKey(album.id, normalizedEmail), "true");
+		setAlbum({
+			...album,
+			subscribers: album.subscribers.filter((subscriberEmail) => subscriberEmail !== normalizedEmail),
+			updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+		});
+		setInviteStatus(`${normalizedEmail} was removed from this album.`);
+		setGeneratedInviteUrl("");
+	};
 	const emptyMessage = (0, import_react.useMemo)(() => {
 		if (!isLoaded) return "Loading album access...";
-		if (!signedInUser) return pendingInvite ? "Sign in to subscribe to this invite." : "Sign in with an invited account to view an album.";
+		if (!signedInUser) return pendingInvite ? "Sign in to subscribe to this invite." : `Sign in as ${DEFAULT_ALBUM_OWNER_EMAIL} or with an invited account.`;
+		if (!isDefaultAlbumOwner && !pendingInvite) return `This private album is only visible to ${DEFAULT_ALBUM_OWNER_EMAIL} and invited subscribers.`;
 		if (pendingInvite && signedInEmail !== pendingInvite.invitedEmail) return "This invite is not for the signed-in account.";
 		if (pendingInvite) return "Subscribe to make this album available.";
 		return "You are not subscribed to an album yet.";
 	}, [
+		isDefaultAlbumOwner,
 		isLoaded,
 		pendingInvite,
 		signedInEmail,
@@ -523,21 +617,22 @@ function App() {
 			}) : null,
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "workspace",
-				children: [visibleAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumPreview, { album: visibleAlbum }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NoAlbumAvailable, { message: emptyMessage }), !canEdit ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthPanel, {}) : shouldShowInviteGate && pendingInvite ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscribePanel, {
+				children: [visibleAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumPreview, { album: visibleAlbum }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NoAlbumAvailable, { message: emptyMessage }), !isLoaded || !signedInUser ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthPanel, {}) : shouldShowInviteGate && pendingInvite ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscribePanel, {
 					invite: pendingInvite,
 					signedInEmail,
 					onSubscribe: handleSubscribe,
 					onClearInvite: handleClearInvite
-				}) : subscribedAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscriptionPanel, {
-					album: subscribedAlbum,
+				}) : activeSubscribedAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscriptionPanel, {
+					album: activeSubscribedAlbum,
 					onReturnToOwnAlbum: handleReturnToOwnAlbum
-				}) : album ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumEditor, {
+				}) : canEdit && album ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumEditor, {
 					album,
 					onAlbumChange: setAlbum,
 					onGenerateInvite: handleGenerateInvite,
+					onRemoveSubscriber: handleRemoveSubscriber,
 					inviteStatus,
 					generatedInviteUrl
-				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthPanel, {})]
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AccessPanel, {})]
 			})
 		]
 	});
