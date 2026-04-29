@@ -1,15 +1,20 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { _ as require_react, g as require_jsx_runtime } from "../_libs/@clerk/react+[...].mjs";
 import { n as SignIn$1, r as dist_exports } from "./dist-DgnZ9HRO.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BU6Dbaj1.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-DNfRf4Le.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
-var DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jotta.no";
+var DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jottagroup.no";
+var DEFAULT_ALBUM_OWNER_NAME = "Ole-Martin";
+var QR_CODE_PHOTO = {
+	id: "qr-code",
+	url: "/images/extended.svg"
+};
 var starterAlbum = {
 	id: "starter-album",
 	title: "North Sea light",
 	description: "A small set of images ready to edit, save, and share.",
-	ownerName: "Ole-Martin",
+	ownerName: DEFAULT_ALBUM_OWNER_NAME,
 	ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
 	subscribers: [],
 	updatedAt: (/* @__PURE__ */ new Date()).toISOString(),
@@ -25,7 +30,8 @@ var starterAlbum = {
 		{
 			id: "seed-3",
 			url: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1200&q=80"
-		}
+		},
+		QR_CODE_PHOTO
 	]
 };
 function createId() {
@@ -139,12 +145,22 @@ function makeInviteUrl(album, invitedEmail) {
 	return url.toString();
 }
 function isValidImageUrl(url) {
+	const trimmedUrl = url.trim();
+	if (trimmedUrl.startsWith("/")) return true;
 	try {
-		const parsed = new URL(url);
+		const parsed = new URL(trimmedUrl);
 		return parsed.protocol === "https:" || parsed.protocol === "http:";
 	} catch {
 		return false;
 	}
+}
+function ensureQrCodePhoto(album) {
+	if (album.photos.some((photo) => photo.url === QR_CODE_PHOTO.url)) return album;
+	return {
+		...album,
+		photos: [...album.photos, QR_CODE_PHOTO],
+		updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+	};
 }
 function getOwnedAlbumStorageKey(user) {
 	return `minimal-album:owned:${user.id}`;
@@ -205,33 +221,8 @@ function AlbumPreview({ album, showSubscribers = false }) {
 		]
 	});
 }
-function AlbumEditor({ album, onAlbumChange, onGenerateInvite, onRemoveSubscriber, inviteStatus, generatedInviteUrl }) {
-	const [photoUrl, setPhotoUrl] = (0, import_react.useState)("");
-	const [photoError, setPhotoError] = (0, import_react.useState)("");
+function AlbumEditor({ album, onGenerateInvite, onRemoveSubscriber, inviteStatus, generatedInviteUrl }) {
 	const [inviteEmail, setInviteEmail] = (0, import_react.useState)("");
-	const updateAlbum = (updates) => {
-		onAlbumChange({
-			...album,
-			...updates,
-			updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-		});
-	};
-	const handleAddPhoto = (event) => {
-		event.preventDefault();
-		if (!isValidImageUrl(photoUrl)) {
-			setPhotoError("Use a valid image URL.");
-			return;
-		}
-		setPhotoError("");
-		updateAlbum({ photos: [...album.photos, {
-			id: createId(),
-			url: photoUrl.trim()
-		}] });
-		setPhotoUrl("");
-	};
-	const handleRemovePhoto = (id) => {
-		updateAlbum({ photos: album.photos.filter((photo) => photo.id !== id) });
-	};
 	const handleGenerateInvite = (event) => {
 		event.preventDefault();
 		onGenerateInvite(inviteEmail);
@@ -243,37 +234,6 @@ function AlbumEditor({ album, onAlbumChange, onGenerateInvite, onRemoveSubscribe
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 				className: "panel-heading",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Album" })
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: ["Title", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-				value: album.title,
-				onChange: (event) => updateAlbum({ title: event.target.value }),
-				placeholder: "Album title"
-			})] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: ["Description", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
-				value: album.description,
-				onChange: (event) => updateAlbum({ description: event.target.value }),
-				placeholder: "A short note for people you share with",
-				rows: 3
-			})] }),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
-				className: "photo-form",
-				onSubmit: handleAddPhoto,
-				children: [
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: ["Image URL", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-						value: photoUrl,
-						onChange: (event) => setPhotoUrl(event.target.value),
-						placeholder: "https://..."
-					})] }),
-					photoError ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-						className: "error-line",
-						children: photoError
-					}) : null,
-					/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						type: "submit",
-						className: "primary-button",
-						children: "Add photo"
-					})
-				]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("form", {
 				className: "invite-form",
@@ -316,24 +276,6 @@ function AlbumEditor({ album, onAlbumChange, onGenerateInvite, onRemoveSubscribe
 					className: "empty-subscribers",
 					children: "No subscribers yet."
 				})]
-			}),
-			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-				className: "photo-list",
-				children: album.photos.map((photo, index) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "photo-row",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("img", {
-							src: photo.url,
-							alt: ""
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children: `Photo ${index + 1}` }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: new URL(photo.url).hostname })] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-							type: "button",
-							onClick: () => handleRemovePhoto(photo.id),
-							children: "Remove"
-						})
-					]
-				}, photo.id))
 			})
 		]
 	});
@@ -503,14 +445,15 @@ function App() {
 			localStorage.removeItem(subscriptionStorageKey);
 		}
 		queueMicrotask(() => {
-			setAlbum(isDefaultAlbumOwner ? normalizedAlbum ?? {
+			const ownerAlbum = normalizedAlbum ?? {
 				...starterAlbum,
 				id: `album-${signedInUser.id}`,
 				ownerName: displayName,
 				ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
 				ownerId: signedInUser.id,
 				updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-			} : null);
+			};
+			setAlbum(isDefaultAlbumOwner ? ensureQrCodePhoto(ownerAlbum) : null);
 			setSubscribedAlbum(normalizedSubscription);
 			setLoadedUserId(signedInUser.id);
 		});
@@ -635,7 +578,6 @@ function App() {
 					onReturnToOwnAlbum: handleReturnToOwnAlbum
 				}) : canEdit && album ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumEditor, {
 					album,
-					onAlbumChange: setAlbum,
 					onGenerateInvite: handleGenerateInvite,
 					onRemoveSubscriber: handleRemoveSubscriber,
 					inviteStatus,

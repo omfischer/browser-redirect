@@ -36,6 +36,10 @@ type AlbumUser = {
 
 const DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jottagroup.no";
 const DEFAULT_ALBUM_OWNER_NAME = "Ole-Martin";
+const QR_CODE_PHOTO: Photo = {
+  id: "qr-code",
+  url: "/images/extended.svg",
+};
 
 const starterAlbum: Album = {
   id: "starter-album",
@@ -58,6 +62,7 @@ const starterAlbum: Album = {
       id: "seed-3",
       url: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1200&q=80",
     },
+    QR_CODE_PHOTO,
   ],
 };
 
@@ -251,12 +256,30 @@ function makeInviteUrl(album: Album, invitedEmail: string) {
 }
 
 function isValidImageUrl(url: string) {
+  const trimmedUrl = url.trim();
+
+  if (trimmedUrl.startsWith("/")) {
+    return true;
+  }
+
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(trimmedUrl);
     return parsed.protocol === "https:" || parsed.protocol === "http:";
   } catch {
     return false;
   }
+}
+
+function ensureQrCodePhoto(album: Album) {
+  if (album.photos.some((photo) => photo.url === QR_CODE_PHOTO.url)) {
+    return album;
+  }
+
+  return {
+    ...album,
+    photos: [...album.photos, QR_CODE_PHOTO],
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 function getOwnedAlbumStorageKey(user: AlbumUser) {
@@ -635,17 +658,18 @@ function App() {
     }
 
     queueMicrotask(() => {
+      const ownerAlbum =
+        normalizedAlbum ?? {
+          ...starterAlbum,
+          id: `album-${signedInUser.id}`,
+          ownerName: displayName,
+          ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
+          ownerId: signedInUser.id,
+          updatedAt: new Date().toISOString(),
+        };
+
       setAlbum(
-        isDefaultAlbumOwner
-          ? normalizedAlbum ?? {
-            ...starterAlbum,
-            id: `album-${signedInUser.id}`,
-            ownerName: displayName,
-            ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
-            ownerId: signedInUser.id,
-            updatedAt: new Date().toISOString(),
-          }
-          : null
+        isDefaultAlbumOwner ? ensureQrCodePhoto(ownerAlbum) : null
       );
       setSubscribedAlbum(normalizedSubscription);
       setLoadedUserId(signedInUser.id);
