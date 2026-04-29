@@ -347,57 +347,18 @@ function AlbumPreview({
 
 function AlbumEditor({
   album,
-  onAlbumChange,
   onGenerateInvite,
   onRemoveSubscriber,
   inviteStatus,
   generatedInviteUrl,
 }: {
   album: Album;
-  onAlbumChange: (album: Album) => void;
   onGenerateInvite: (email: string) => void;
   onRemoveSubscriber: (email: string) => void;
   inviteStatus: string;
   generatedInviteUrl: string;
 }) {
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [photoError, setPhotoError] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
-
-  const updateAlbum = (updates: Partial<Album>) => {
-    onAlbumChange({
-      ...album,
-      ...updates,
-      updatedAt: new Date().toISOString(),
-    });
-  };
-
-  const handleAddPhoto = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!isValidImageUrl(photoUrl)) {
-      setPhotoError("Use a valid image URL.");
-      return;
-    }
-
-    setPhotoError("");
-    updateAlbum({
-      photos: [
-        ...album.photos,
-        {
-          id: createId(),
-          url: photoUrl.trim(),
-        },
-      ],
-    });
-    setPhotoUrl("");
-  };
-
-  const handleRemovePhoto = (id: string) => {
-    updateAlbum({
-      photos: album.photos.filter((photo) => photo.id !== id),
-    });
-  };
 
   const handleGenerateInvite = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -409,42 +370,6 @@ function AlbumEditor({
       <div className="panel-heading">
         <p>Album</p>
       </div>
-
-      <label>
-        Title
-        <input
-          value={album.title}
-          onChange={(event) => updateAlbum({ title: event.target.value })}
-          placeholder="Album title"
-        />
-      </label>
-
-      <label>
-        Description
-        <textarea
-          value={album.description}
-          onChange={(event) => updateAlbum({ description: event.target.value })}
-          placeholder="A short note for people you share with"
-          rows={3}
-        />
-      </label>
-
-      <form className="photo-form" onSubmit={handleAddPhoto}>
-        <label>
-          Image URL
-          <input
-            value={photoUrl}
-            onChange={(event) => setPhotoUrl(event.target.value)}
-            placeholder="https://..."
-          />
-        </label>
-
-        {photoError ? <div className="error-line">{photoError}</div> : null}
-
-        <button type="submit" className="primary-button">
-          Add photo
-        </button>
-      </form>
 
       <form className="invite-form" onSubmit={handleGenerateInvite}>
         <div>
@@ -495,21 +420,6 @@ function AlbumEditor({
           <div className="empty-subscribers">No subscribers yet.</div>
         )}
       </section>
-
-      <div className="photo-list">
-        {album.photos.map((photo, index) => (
-          <div className="photo-row" key={photo.id}>
-            <img src={photo.url} alt="" />
-            <div>
-              <strong>{`Photo ${index + 1}`}</strong>
-              <span>{new URL(photo.url).hostname}</span>
-            </div>
-            <button type="button" onClick={() => handleRemovePhoto(photo.id)}>
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
     </aside>
   );
 }
@@ -929,7 +839,6 @@ function App() {
         ) : canEdit && album ? (
           <AlbumEditor
             album={album}
-            onAlbumChange={setAlbum}
             onGenerateInvite={handleGenerateInvite}
             onRemoveSubscriber={handleRemoveSubscriber}
             inviteStatus={inviteStatus}
