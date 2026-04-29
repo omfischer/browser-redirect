@@ -1,7 +1,14 @@
-import { defineConfig } from 'vite'
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [tanstackStart(), react()],
+  resolve: {
+    tsconfigPaths: true,
+  },
+  server: {
+    allowedHosts: ['monocarpous-gratifyingly-taunya.ngrok-free.dev'],
+  },
 })
