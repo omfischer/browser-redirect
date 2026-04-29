@@ -528,12 +528,17 @@ function App() {
   const signedInUser = isSignedIn ? user : null;
   const displayName = getDisplayName(signedInUser);
   const signedInEmail = getPrimaryEmail(signedInUser);
+  const hasLoadedSignedInUser =
+    Boolean(signedInUser) && loadedUserId === signedInUser?.id;
 
   const subscribedToPendingInvite =
-    Boolean(pendingInvite) && subscribedAlbum?.id === pendingInvite?.album.id;
+    hasLoadedSignedInUser &&
+    Boolean(pendingInvite) &&
+    subscribedAlbum?.id === pendingInvite?.album.id;
   const shouldShowInviteGate = Boolean(pendingInvite) && !subscribedToPendingInvite;
-  const visibleAlbum = shouldShowInviteGate ? null : subscribedAlbum ?? album;
-  const canEdit = isLoaded && Boolean(signedInUser);
+  const visibleAlbum =
+    hasLoadedSignedInUser && !shouldShowInviteGate ? subscribedAlbum ?? album : null;
+  const canEdit = isLoaded && hasLoadedSignedInUser;
 
   useEffect(() => {
     if (!isLoaded || !signedInUser) {
