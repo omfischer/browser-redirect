@@ -5,7 +5,6 @@ import "./App.css";
 type Photo = {
   id: string;
   url: string;
-  caption: string;
 };
 
 type Album = {
@@ -44,17 +43,14 @@ const starterAlbum: Album = {
     {
       id: "seed-1",
       url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
-      caption: "Long evening by the water",
     },
     {
       id: "seed-2",
       url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80",
-      caption: "Road through the valley",
     },
     {
       id: "seed-3",
       url: "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1200&q=80",
-      caption: "Cabin morning",
     },
   ],
 };
@@ -101,8 +97,7 @@ function normalizeAlbum(input: unknown): Album | null {
         Boolean(photo) &&
         typeof photo.id === "string" &&
         typeof photo.url === "string" &&
-        isValidImageUrl(photo.url) &&
-        typeof photo.caption === "string"
+        isValidImageUrl(photo.url)
       );
     })
     .slice(0, 24);
@@ -183,7 +178,6 @@ function createInvitePayload(album: Album, invitedEmail: string): AlbumInvite {
     photos: album.photos.map((photo) => ({
       id: photo.id,
       url: photo.url.trim(),
-      caption: photo.caption.trim(),
     })),
   };
 
@@ -253,8 +247,7 @@ function AlbumPreview({ album }: { album: Album }) {
 
       {heroPhoto ? (
         <figure className="hero-photo">
-          <img src={heroPhoto.url} alt={heroPhoto.caption || album.title} />
-          <figcaption>{heroPhoto.caption || album.title}</figcaption>
+          <img src={heroPhoto.url} alt={album.title} />
         </figure>
       ) : (
         <div className="empty-album">No photos yet</div>
@@ -264,8 +257,7 @@ function AlbumPreview({ album }: { album: Album }) {
         <div className="photo-grid">
           {remainingPhotos.map((photo) => (
             <figure key={photo.id} className="photo-tile">
-              <img src={photo.url} alt={photo.caption || album.title} />
-              <figcaption>{photo.caption || "Untitled"}</figcaption>
+              <img src={photo.url} alt={album.title} />
             </figure>
           ))}
         </div>
@@ -288,7 +280,6 @@ function AlbumEditor({
   generatedInviteUrl: string;
 }) {
   const [photoUrl, setPhotoUrl] = useState("");
-  const [caption, setCaption] = useState("");
   const [photoError, setPhotoError] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
 
@@ -315,12 +306,10 @@ function AlbumEditor({
         {
           id: createId(),
           url: photoUrl.trim(),
-          caption: caption.trim() || "Untitled",
         },
       ],
     });
     setPhotoUrl("");
-    setCaption("");
   };
 
   const handleRemovePhoto = (id: string) => {
@@ -369,15 +358,6 @@ function AlbumEditor({
           />
         </label>
 
-        <label>
-          Caption
-          <input
-            value={caption}
-            onChange={(event) => setCaption(event.target.value)}
-            placeholder="Caption"
-          />
-        </label>
-
         {photoError ? <div className="error-line">{photoError}</div> : null}
 
         <button type="submit" className="primary-button">
@@ -420,7 +400,7 @@ function AlbumEditor({
           <div className="photo-row" key={photo.id}>
             <img src={photo.url} alt="" />
             <div>
-              <strong>{photo.caption || `Photo ${index + 1}`}</strong>
+              <strong>{`Photo ${index + 1}`}</strong>
               <span>{new URL(photo.url).hostname}</span>
             </div>
             <button type="button" onClick={() => handleRemovePhoto(photo.id)}>
