@@ -550,13 +550,7 @@ function SubscribePanel({
   );
 }
 
-function SubscriptionPanel({
-  album,
-  onReturnToOwnAlbum,
-}: {
-  album: Album;
-  onReturnToOwnAlbum: () => void;
-}) {
+function SubscriptionPanel({ album }: { album: Album }) {
   return (
     <aside className="workspace-panel" aria-label="Subscription">
       <div className="panel-heading">
@@ -568,10 +562,6 @@ function SubscriptionPanel({
         <h2>{album.title || "Untitled album"}</h2>
         <p>Subscribed albums are read-only in this local demo.</p>
       </div>
-
-      <button type="button" className="ghost-button" onClick={onReturnToOwnAlbum}>
-        Return to my album
-      </button>
     </aside>
   );
 }
@@ -757,14 +747,6 @@ function App() {
     window.history.replaceState(null, "", window.location.pathname);
   };
 
-  const handleReturnToOwnAlbum = () => {
-    setSubscribedAlbum(null);
-
-    if (signedInUser) {
-      localStorage.removeItem(getSubscriptionStorageKey(signedInUser));
-    }
-  };
-
   const handleRemoveSubscriber = (email: string) => {
     if (!album || !isDefaultAlbumOwner) {
       return;
@@ -856,10 +838,7 @@ function App() {
             onClearInvite={handleClearInvite}
           />
         ) : activeSubscribedAlbum ? (
-          <SubscriptionPanel
-            album={activeSubscribedAlbum}
-            onReturnToOwnAlbum={handleReturnToOwnAlbum}
-          />
+          <SubscriptionPanel album={activeSubscribedAlbum} />
         ) : canEdit && album ? (
           <AlbumEditor
             album={album}
