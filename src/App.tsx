@@ -34,7 +34,7 @@ type AlbumUser = {
   } | null;
 };
 
-const DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jotta.no";
+const DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jottagroup.no";
 const DEFAULT_ALBUM_OWNER_NAME = "Ole-Martin";
 
 const starterAlbum: Album = {
@@ -659,11 +659,11 @@ function App() {
     Boolean(signedInUser) && loadedUserId === signedInUser?.id;
   const activeSubscribedAlbum =
     hasLoadedSignedInUser &&
-    !isDefaultAlbumOwner &&
-    subscribedAlbum &&
-    isDefaultOwnerAlbum(subscribedAlbum) &&
-    isAlbumSharedWithEmail(subscribedAlbum, signedInEmail) &&
-    !isSubscriberRevoked(subscribedAlbum.id, signedInEmail)
+      !isDefaultAlbumOwner &&
+      subscribedAlbum &&
+      isDefaultOwnerAlbum(subscribedAlbum) &&
+      isAlbumSharedWithEmail(subscribedAlbum, signedInEmail) &&
+      !isSubscriberRevoked(subscribedAlbum.id, signedInEmail)
       ? subscribedAlbum
       : null;
 
@@ -728,13 +728,13 @@ function App() {
       setAlbum(
         isDefaultAlbumOwner
           ? normalizedAlbum ?? {
-              ...starterAlbum,
-              id: `album-${signedInUser.id}`,
-              ownerName: displayName,
-              ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
-              ownerId: signedInUser.id,
-              updatedAt: new Date().toISOString(),
-            }
+            ...starterAlbum,
+            id: `album-${signedInUser.id}`,
+            ownerName: displayName,
+            ownerEmail: DEFAULT_ALBUM_OWNER_EMAIL,
+            ownerId: signedInUser.id,
+            updatedAt: new Date().toISOString(),
+          }
           : null
       );
       setSubscribedAlbum(normalizedSubscription);
