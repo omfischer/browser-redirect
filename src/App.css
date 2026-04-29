@@ -105,6 +105,54 @@
   font-size: 1rem;
 }
 
+.album-subscribers {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #e2e8f0;
+  background: rgba(248, 250, 252, 0.82);
+  padding: 18px 28px;
+}
+
+.album-subscribers > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.album-subscribers p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.album-subscribers span {
+  color: #475569;
+  font-size: 0.86rem;
+}
+
+.album-subscribers ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.album-subscribers li {
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 7px 10px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
 .hero-photo {
   position: relative;
   margin: 0;

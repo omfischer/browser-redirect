@@ -287,7 +287,13 @@ function isSubscriberRevoked(albumId: string, email: string) {
   );
 }
 
-function AlbumPreview({ album }: { album: Album }) {
+function AlbumPreview({
+  album,
+  showSubscribers = false,
+}: {
+  album: Album;
+  showSubscribers?: boolean;
+}) {
   const heroPhoto = album.photos[0];
   const remainingPhotos = album.photos.slice(1);
 
@@ -315,6 +321,25 @@ function AlbumPreview({ album }: { album: Album }) {
             </figure>
           ))}
         </div>
+      ) : null}
+
+      {showSubscribers ? (
+        <section className="album-subscribers" aria-label="Album subscribers">
+          <div>
+            <p>Subscribers</p>
+            <span>{album.subscribers.length} members</span>
+          </div>
+
+          {album.subscribers.length > 0 ? (
+            <ul>
+              {album.subscribers.map((email) => (
+                <li key={email}>{email}</li>
+              ))}
+            </ul>
+          ) : (
+            <span>No subscribers yet.</span>
+          )}
+        </section>
       ) : null}
     </section>
   );
@@ -879,7 +904,10 @@ function App() {
 
       <div className="workspace">
         {visibleAlbum ? (
-          <AlbumPreview album={visibleAlbum} />
+          <AlbumPreview
+            album={visibleAlbum}
+            showSubscribers={isDefaultAlbumOwner}
+          />
         ) : (
           <NoAlbumAvailable message={emptyMessage} />
         )}

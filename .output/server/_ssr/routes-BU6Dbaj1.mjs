@@ -1,7 +1,7 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { _ as require_react, g as require_jsx_runtime } from "../_libs/@clerk/react+[...].mjs";
 import { n as SignIn$1, r as dist_exports } from "./dist-DgnZ9HRO.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BHDMmMpF.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BU6Dbaj1.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = /* @__PURE__ */ __toESM(require_jsx_runtime());
 var DEFAULT_ALBUM_OWNER_EMAIL = "ole-martin@jotta.no";
@@ -162,7 +162,7 @@ function isSubscriberRevoked(albumId, email) {
 	if (typeof window === "undefined") return false;
 	return localStorage.getItem(getRevokedSubscriberStorageKey(albumId, email.trim().toLowerCase())) === "true";
 }
-function AlbumPreview({ album }) {
+function AlbumPreview({ album, showSubscribers = false }) {
 	const heroPhoto = album.photos[0];
 	const remainingPhotos = album.photos.slice(1);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
@@ -196,6 +196,11 @@ function AlbumPreview({ album }) {
 						alt: album.title
 					})
 				}, photo.id))
+			}) : null,
+			showSubscribers ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
+				className: "album-subscribers",
+				"aria-label": "Album subscribers",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "Subscribers" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [album.subscribers.length, " members"] })] }), album.subscribers.length > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("ul", { children: album.subscribers.map((email) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("li", { children: email }, email)) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "No subscribers yet." })]
 			}) : null
 		]
 	});
@@ -617,7 +622,10 @@ function App() {
 			}) : null,
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 				className: "workspace",
-				children: [visibleAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumPreview, { album: visibleAlbum }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NoAlbumAvailable, { message: emptyMessage }), !isLoaded || !signedInUser ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthPanel, {}) : shouldShowInviteGate && pendingInvite ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscribePanel, {
+				children: [visibleAlbum ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlbumPreview, {
+					album: visibleAlbum,
+					showSubscribers: isDefaultAlbumOwner
+				}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NoAlbumAvailable, { message: emptyMessage }), !isLoaded || !signedInUser ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthPanel, {}) : shouldShowInviteGate && pendingInvite ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SubscribePanel, {
 					invite: pendingInvite,
 					signedInEmail,
 					onSubscribe: handleSubscribe,
